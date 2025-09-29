@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Blog {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String    @db.VarChar(50)
+  content     String
+  isPublished Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tags        BlogTag[] @relation("BlogToBlogTag")
+}
+
+model Note {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String    @db.VarChar(50)
+  content     String
+  isPublished Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tags        NoteTag[] @relation("NoteToNoteTag")
+}
+
+model BlogTag {
+  id      Int     @id @default(autoincrement())
+  tagName String  @unique @db.VarChar(20)
+  tagType TagType @default(BLOG)
+  blogs   Blog[]  @relation("BlogToBlogTag")
+}
+
+model NoteTag {
+  id      Int     @id @default(autoincrement())
+  tagName String  @unique @db.VarChar(20)
+  tagType TagType @default(NOTE)
+  notes   Note[]  @relation("NoteToNoteTag")
+}
+
+model Echo {
+  id          Int      @id @default(autoincrement())
+  reference   String   @db.VarChar(20)
+  isPublished Boolean  @default(true)
+  content     String   @db.VarChar(100)
+  createdAt   DateTime @default(now())
+}
+
+enum TagType {
+  BLOG
+  NOTE
+}
