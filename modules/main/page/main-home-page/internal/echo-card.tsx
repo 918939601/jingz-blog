@@ -1,7 +1,14 @@
 'use client'
 
-import type { Echo } from '@prisma/client'
 import { useRandomEchoIndexStore } from '@/store/use-display-echo-store'
+
+interface Echo {
+  id: number
+  reference: string
+  content: string
+  isPublished: boolean
+  createdAt: Date
+}
 
 export default function EchoCard({ allPublishedEcho }: { allPublishedEcho: Echo[] }) {
   const randomIndex = useRandomEchoIndexStore(s => s.randomIndex)

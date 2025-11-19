@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getRawBlogBySlug } from '@/actions/blogs'
+import { fetchBlogBySlug } from '@/lib/api/blog'
 import { getBlogTags } from '@/actions/tags'
 import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { requireAdmin } from '@/lib/auth'
@@ -17,9 +17,25 @@ export default async function Page({
   }
 
   const slug = (await params).slug?.[0] ?? null
-  const [article, blogTags] = await Promise.all([slug ? getRawBlogBySlug(slug) : Promise.resolve(null), getBlogTags()])
+  
+  let article = null
+  if (slug) {
+    try {
+      const blogDTO = await fetchBlogBySlug(slug)
+      // Convert DTO to match Prisma type
+      article = {
+        ...blogDTO,
+        createdAt: new Date(blogDTO.createdAt),
+        updatedAt: new Date(blogDTO.updatedAt),
+      } as any
+    }
+    catch {
+      // Blog not found, continue with null
+    }
+  }
 
-  const relatedBlogTagNames = article ? article.tags.map(v => v.tagName) : []
+  const blogTags = await getBlogTags()
+  const relatedBlogTagNames = article ? (article.tags ?? []).map((v: any) => v.tagName) : []
 
   return (
     <AdminArticleEditPage

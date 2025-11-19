@@ -1,4 +1,4 @@
-import { toggleNotePublishedById } from '@/actions/notes'
+import { toggleNotePublished } from '@/lib/api/note'
 import { Switch } from '@/components/ui/switch'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useTransition } from 'react'
@@ -21,7 +21,7 @@ export default function PublishToggleSwitch({
 
     startTransition(async () => {
       try {
-        await toggleNotePublishedById(noteId, newStatus)
+        await toggleNotePublished(noteId, newStatus)
         queryClient.invalidateQueries({
           queryKey: ['note-list'],
           exact: false,

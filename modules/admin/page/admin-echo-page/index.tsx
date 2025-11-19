@@ -1,6 +1,6 @@
 'use client'
 
-import { getAllEchos, getQueryEchos } from '@/actions/echos'
+import { fetchEchos } from '@/lib/api/echo'
 import Loading from '@/components/shared/loading'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -11,7 +11,15 @@ export default function AdminEchoPage() {
   const [query, setQuery] = useState('')
   const { isPending, data } = useQuery({
     queryKey: ['echo-list', query],
-    queryFn: () => query.trim() ? getQueryEchos(query) : getAllEchos(),
+    queryFn: () =>
+      fetchEchos({ query: query.trim() || undefined, page: 1, pageSize: 50 })
+      .then(r => r.items.map(e => ({ 
+        id: Number(e.id),
+        reference: e.reference,
+        content: e.content,
+        isPublished: e.isPublished,
+        createdAt: new Date(e.createdAt),
+      }))),
   })
 
   return (

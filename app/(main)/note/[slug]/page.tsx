@@ -1,34 +1,28 @@
-import { getPublishedNoteHTMLBySlug } from '@/actions/notes'
+import { fetchNoteHtmlBySlug } from '@/lib/api/note'
 import ArticleDisplayPage from '@/components/shared/article-display-page'
 import CommentCard from '@/components/shared/comment-card'
 import HorizontalDividingLine from '@/components/shared/horizontal-dividing-line'
 import ScrollIndicator from '@/components/shared/scroll-indicator'
-import { prisma } from '@/db'
 import { notFound } from 'next/navigation'
 
 export const dynamicParams = true
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const article = await getPublishedNoteHTMLBySlug((await params).slug)
-
-  if (!article)
+  try {
+    const article = await fetchNoteHtmlBySlug((await params).slug)
+    return {
+      title: article.title,
+    }
+  }
+  catch {
     notFound()
-
-  return {
-    title: article.title,
   }
 }
 
 export async function generateStaticParams() {
-  const allArticles = await prisma.note.findMany({
-    where: {
-      isPublished: true,
-    },
-  })
-
-  return allArticles.map(article => ({
-    slug: article.slug,
-  }))
+  // TODO: 从 Go API 获取所有已发布的笔记
+  // 暂时返回空数组，后续需要实现
+  return []
 }
 
 export default async function Page({
@@ -36,13 +30,19 @@ export default async function Page({
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const article = await getPublishedNoteHTMLBySlug((await params).slug)
+  let article
+  try {
+    article = await fetchNoteHtmlBySlug((await params).slug)
+  }
+  catch {
+    notFound()
+  }
 
   if (!article)
     notFound()
 
   const { content, title, createdAt, tags, id } = article
-  const tagNames = tags.map(v => v.tagName)
+  const tagNames = (tags || []).map(v => v.tagName)
 
   return (
     <div className="flex flex-col gap-4">

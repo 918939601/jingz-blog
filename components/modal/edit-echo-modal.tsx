@@ -1,13 +1,14 @@
 'use client'
 
-import type { UpdateEchoDTO } from '@/actions/echos/type'
-import { updateEchoById } from '@/actions/echos'
-import { UpdateEchoSchema } from '@/actions/echos/type'
+import type { UpdateEchoDTO } from '@/lib/schemas/echo'
+import { updateEcho } from '@/lib/api/echo'
+import { UpdateEchoSchema } from '@/lib/schemas/echo'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog'
 import {
@@ -63,10 +64,15 @@ export default function EditEchoModal() {
 
   const queryClient = useQueryClient()
   const { mutate, isPending } = useMutation({
-    mutationFn: handleEditEcho,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['echo-list'] })
+    mutationFn: async (values: UpdateEchoDTO) => {
+      const { id, reference, content, isPublished } = values
+      return updateEcho(id, { reference, content, isPublished })
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['echo-list'], exact: false })
+      await queryClient.refetchQueries({ queryKey: ['echo-list'], exact: false })
       toast.success(`修改成功`)
+      onModalClose()
     },
     onError: (error) => {
       if (error instanceof Error) {
@@ -78,9 +84,8 @@ export default function EditEchoModal() {
     },
   })
 
-  async function onSubmit(values: UpdateEchoDTO) {
+  function onSubmit(values: UpdateEchoDTO) {
     mutate(values)
-    onModalClose()
   }
 
   return (
@@ -92,9 +97,10 @@ export default function EditEchoModal() {
       }}
     >
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>编辑引用</DialogTitle>
-        </DialogHeader>
+      <DialogHeader>
+        <DialogTitle>编辑引用</DialogTitle>
+        <DialogDescription>修改引用内容与发布状态</DialogDescription>
+      </DialogHeader>
         <div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -155,8 +161,4 @@ export default function EditEchoModal() {
       </DialogContent>
     </Dialog>
   )
-}
-
-async function handleEditEcho(values: UpdateEchoDTO) {
-  await updateEchoById({ ...values })
 }

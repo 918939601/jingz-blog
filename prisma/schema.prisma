@@ -15,7 +15,7 @@ model Blog {
   isPublished Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  tags        BlogTag[] @relation("BlogToBlogTag")
+  tags        BlogTag[]
 }
 
 model Note {
@@ -26,21 +26,21 @@ model Note {
   isPublished Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  tags        NoteTag[] @relation("NoteToNoteTag")
+  tags        NoteTag[]
 }
 
 model BlogTag {
   id      Int     @id @default(autoincrement())
   tagName String  @unique @db.VarChar(20)
   tagType TagType @default(BLOG)
-  blogs   Blog[]  @relation("BlogToBlogTag")
+  blogs   Blog[]
 }
 
 model NoteTag {
   id      Int     @id @default(autoincrement())
   tagName String  @unique @db.VarChar(20)
   tagType TagType @default(NOTE)
-  notes   Note[]  @relation("NoteToNoteTag")
+  notes   Note[]
 }
 
 model Echo {

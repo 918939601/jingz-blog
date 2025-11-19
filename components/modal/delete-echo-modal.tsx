@@ -1,4 +1,4 @@
-import { deleteEchoById } from '@/actions/echos'
+import { deleteEcho } from '@/lib/api/echo'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,7 +20,9 @@ export default function DeleteEchoModal() {
 
   const queryClient = useQueryClient()
   const { mutate, isPending } = useMutation({
-    mutationFn: handleDeleteEcho,
+    mutationFn: async (id: number) => {
+      return deleteEcho(id)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['echo-list'] })
       toast.success(`删除成功`)
@@ -67,8 +69,4 @@ export default function DeleteEchoModal() {
       </DialogContent>
     </Dialog>
   )
-}
-
-async function handleDeleteEcho(id: number) {
-  await deleteEchoById(id)
 }

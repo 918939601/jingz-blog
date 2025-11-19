@@ -1,9 +1,9 @@
 'use client'
 
-import { toggleEchoPublishedById } from '@/actions/echos'
+import { toggleEchoPublished } from '@/lib/api/echo'
 import { Switch } from '@/components/ui/switch'
 import { useQueryClient } from '@tanstack/react-query'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 export default function PublishToggleSwitch({ echoId, isPublished: initial }: { echoId: number, isPublished: boolean }) {
@@ -11,13 +11,18 @@ export default function PublishToggleSwitch({ echoId, isPublished: initial }: { 
   const [isPending, startTransition] = useTransition()
   const queryClient = useQueryClient()
 
+  // 当 initial prop 变化时，更新内部状态
+  useEffect(() => {
+    setIsPublished(initial)
+  }, [initial])
+
   const handleToggle = async () => {
     const newStatus = !isPublished
     setIsPublished(newStatus)
 
     startTransition(async () => {
       try {
-        await toggleEchoPublishedById(echoId, newStatus)
+        await toggleEchoPublished(echoId, newStatus)
         queryClient.invalidateQueries({
           queryKey: ['echo-list'],
           exact: false,

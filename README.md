@@ -89,6 +89,24 @@ pnpm dev
 
 至此项目的前端展示是可以跑起来了，数据库也创建好了~
 
+### 与 go-zero 后端对接所需环境变量
+
+> 若你启用 go-zero 作为后端，请在 `.env` 中新增以下变量：
+
+```ini
+# Go API 基地址（用于前端调用）
+GO_API_BASE=
+
+# Next revalidate 路由的密钥，与 app/api/revalidate/route.ts 对应
+REVALIDATE_SECRET=
+
+# 自定义对外 Bearer Token 的签名密钥（Next 与 Go 共用）
+JWT_SECRET=
+```
+
+配置完成后，Next 前端将通过 `lib/api/client.ts` 使用 `GO_API_BASE` 访问 Go 接口；
+Go 端进行写操作成功后调用 Next 的 `/api/revalidate` 并携带 `x-revalidate-secret: ${REVALIDATE_SECRET}` 触发页面再验证。
+
 但控制台大概还在报错，问题不大，接下来会解决~
 
 ### admin 拦截

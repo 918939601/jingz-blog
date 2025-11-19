@@ -2,8 +2,8 @@
 
 import type { Blog, BlogTag, Note, NoteTag } from '@prisma/client'
 import type { ArticleDTO } from './type'
-import { createBlog, updateBlogById } from '@/actions/blogs'
-import { createNote, updateNoteById } from '@/actions/notes'
+import { createBlog, updateBlog } from '@/lib/api/blog'
+import { createNote, updateNote } from '@/lib/api/note'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import {
@@ -60,7 +60,7 @@ export default function AdminArticleEditPage({
       }
 
       toast.success('保存成功')
-      router.push(`/admin/${editPageType.toLowerCase()}/edit/${variables.slug}`)
+      router.push(`/admin/${editPageType.toLowerCase()}`)
     },
     onError: (error) => {
       if (error instanceof Error) {
@@ -220,10 +220,10 @@ async function updateArticle(values: ArticleDTO, editPageType: TagType, id: numb
   if (id) {
     switch (editPageType) {
       case TagType.BLOG:
-        await updateBlogById({ ...values, id })
+        await updateBlog(id, values)
         break
       case TagType.NOTE:
-        await updateNoteById({ ...values, id })
+        await updateNote(id, values)
         break
       default:
         throw new Error(`文章类型错误`)
@@ -232,10 +232,10 @@ async function updateArticle(values: ArticleDTO, editPageType: TagType, id: numb
   else {
     switch (editPageType) {
       case TagType.BLOG:
-        await createBlog(values)
+        await createBlog(values as any)
         break
       case TagType.NOTE:
-        await createNote(values)
+        await createNote(values as any)
         break
       default:
         throw new Error(`文章类型错误`)

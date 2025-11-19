@@ -1,6 +1,7 @@
 import * as motion from 'motion/react-client'
 import { getAllShowBlogs } from '@/actions/blogs'
 import BlogListItem from './internal/blog-list-item'
+import type { Variants } from 'motion/react'
 
 const containerVariants = {
   hidden: {},
@@ -11,14 +12,14 @@ const containerVariants = {
   },
 }
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: [30, -8, 0],
     transition: {
-      type: 'tween',
-      ease: 'easeInOut',
+      type: 'tween' as const,
+      ease: 'easeInOut' as const,
       duration: 0.8,
     },
   },

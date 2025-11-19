@@ -3,6 +3,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import type { Transition } from 'motion/react'  // 新增
 
 export default function Loading() {
   const animation = {
@@ -13,7 +14,7 @@ export default function Loading() {
   const transition = {
     duration: 2,
     repeat: Infinity,
-    ease: 'easeOut',
+    ease: 'easeOut' as const,
   }
 
   return (

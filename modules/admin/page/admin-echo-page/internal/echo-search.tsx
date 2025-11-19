@@ -49,6 +49,9 @@ function EchoSearch({ setQuery }: { setQuery: Dispatch<SetStateAction<string>> }
         variant="secondary"
         onClick={() => {
           setQuery('')
+          if (inputRef.current) {
+            inputRef.current.value = ''
+          }
         }}
         className="cursor-pointer"
       >

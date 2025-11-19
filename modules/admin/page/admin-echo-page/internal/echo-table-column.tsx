@@ -1,7 +1,14 @@
 'use client'
 
-import type { Echo } from '@prisma/client'
 import type { ColumnDef } from '@tanstack/react-table'
+
+interface Echo {
+  id: number
+  reference: string
+  content: string
+  isPublished: boolean
+  createdAt: Date
+}
 import { Button } from '@/components/ui/button'
 import { prettyDateTime } from '@/lib/time'
 import {

@@ -1,9 +1,16 @@
 'use client'
 
-import type { Echo } from '@prisma/client'
 import { motion } from 'motion/react'
 import { DataTable } from './data-table'
 import { columns } from './echo-table-column'
+
+interface Echo {
+  id: number
+  reference: string
+  content: string
+  isPublished: boolean
+  createdAt: Date
+}
 
 export default function EchoListTable({ echoList }: { echoList: Echo[] }) {
   return (

@@ -1,10 +1,9 @@
 'use client'
 
-import { getNoteList, getNotesBySelectedTagName, getQueryNotes } from '@/actions/notes'
-import { getNoteTags } from '@/actions/tags'
-import Loading from '@/components/shared/loading'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { fetchNotes } from '@/lib/api/note'
+import Loading from '@/components/shared/loading'
 import NoteListTable from './internal/note-list-table'
 import NoteSearch from './internal/note-search'
 import { NoteTagsContainer } from './internal/note-tags-container'
@@ -13,22 +12,24 @@ export default function AdminNotePage() {
   const [query, setQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
-  const { data: noteList, isPending: noteListPending } = useQuery({
+  const { data: noteResponse, isPending: noteListPending } = useQuery({
     queryKey: ['note-list', query, selectedTags],
     queryFn: () => {
-      if (query.trim())
-        return getQueryNotes(query)
-      if (selectedTags.length > 0)
-        return getNotesBySelectedTagName(selectedTags)
-      return getNoteList()
+      const tags = selectedTags.length > 0 ? selectedTags.join(',') : undefined
+      return fetchNotes({
+        query: query.trim() || undefined,
+        tags,
+        page: 1,
+        pageSize: 50,
+      })
     },
     staleTime: 1000 * 30,
   })
 
-  const { data: noteTags, isPending: noteTagsPending } = useQuery({
-    queryKey: ['note-tags'],
-    queryFn: getNoteTags,
-  })
+  // TODO: 从 Go API 获取标签列表
+  // 暂时使用空数组，后续需要实现 Tags API
+  const noteTags: any[] = []
+  const noteTagsPending = false
 
   return (
     <main className="w-full flex flex-col gap-2">
@@ -39,9 +40,12 @@ export default function AdminNotePage() {
       }
 
       {
-        (noteListPending || noteTagsPending)
+        noteListPending
           ? <Loading />
-          : <NoteListTable noteList={noteList ?? []} />
+          : <NoteListTable noteList={(noteResponse?.items?.map((item: any) => ({
+            ...item,
+            tags: item.tags ?? [],
+          })) as any) ?? []} />
       }
     </main>
   )

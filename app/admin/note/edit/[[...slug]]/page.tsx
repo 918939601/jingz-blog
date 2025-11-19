@@ -1,4 +1,4 @@
-import { getRawNoteBySlug } from '@/actions/notes'
+import { fetchNoteBySlug } from '@/lib/api/note'
 import { getNoteTags } from '@/actions/tags'
 import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { requireAdmin } from '@/lib/auth'
@@ -18,9 +18,24 @@ export default async function Page({
 
   const slug = (await params).slug?.[0] ?? null
 
-  const [article, noteTags] = await Promise.all([slug ? getRawNoteBySlug(slug) : Promise.resolve(null), getNoteTags()])
+  let article = null
+  if (slug) {
+    try {
+      const noteDTO = await fetchNoteBySlug(slug)
+      // Convert DTO to match Prisma type
+      article = {
+        ...noteDTO,
+        createdAt: new Date(noteDTO.createdAt),
+        updatedAt: new Date(noteDTO.updatedAt),
+      } as any
+    }
+    catch {
+      // Note not found, continue with null
+    }
+  }
 
-  const relatedArticleTagNames = article ? article.tags.map(v => v.tagName) : []
+  const noteTags = await getNoteTags()
+  const relatedArticleTagNames = article ? (article.tags ?? []).map((v: any) => v.tagName) : []
 
   return (
     <AdminArticleEditPage

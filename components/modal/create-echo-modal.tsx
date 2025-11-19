@@ -1,8 +1,9 @@
 'use client'
 
-import type { CreateEchoDTO } from '@/actions/echos/type'
-import { createEcho } from '@/actions/echos'
-import { CreateEchoSchema } from '@/actions/echos/type'
+import type { CreateEchoDTO } from '@/lib/schemas/echo'
+import { createEcho } from '@/lib/api/echo'
+import { CreateEchoSchema } from '@/lib/schemas/echo'
+import type { EchoDTO } from '@/lib/api/echo'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -36,7 +37,9 @@ export default function CreateEchoModal() {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: handleCreateEcho,
+    mutationFn: async (values: CreateEchoDTO) => {
+      return createEcho(values)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['echo-list'] })
       toast.success(`创建成功`)
@@ -141,6 +144,4 @@ export default function CreateEchoModal() {
   )
 }
 
-async function handleCreateEcho(values: CreateEchoDTO) {
-  await createEcho(values)
-}
+

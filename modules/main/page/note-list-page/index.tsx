@@ -1,6 +1,7 @@
 import { getAllShowNotes } from '@/actions/notes'
 import * as motion from 'motion/react-client'
 import NoteListItem from './internal/note-list-item'
+import type { Variants } from 'motion/react'
 
 const containerVariants = {
   hidden: {},
@@ -11,7 +12,7 @@ const containerVariants = {
   },
 }
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,

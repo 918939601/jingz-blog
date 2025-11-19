@@ -40,7 +40,7 @@ export const columns: ColumnDef<BlogListItem>[] = [
       )
     },
     cell: ({ row }) => {
-      const tags = row.original.tags
+      const tags = row.original.tags || []
 
       return (
         <div className="flex gap-1">

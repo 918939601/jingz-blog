@@ -1,12 +1,13 @@
 import * as motion from 'motion/react-client'
-import { getAllPublishedEcho } from '@/actions/echos'
+import { fetchPublishedEchos } from '@/lib/api/echo'
 import BioSection from './internal/bio-section'
 import EchoCard from './internal/echo-card'
 import TechStack from './internal/tech-stack'
 import YeAvatar from './internal/ye-avatar'
 
 export default async function MainLayoutContainer() {
-  const allPublishedEcho = await getAllPublishedEcho()
+  const allPublishedEcho = (await fetchPublishedEchos())
+  .map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
 
   return (
     <motion.main
