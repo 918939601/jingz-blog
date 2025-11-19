@@ -9,6 +9,7 @@ import (
 	blog "server/blogapi/internal/handler/blog"
 	echo "server/blogapi/internal/handler/echo"
 	note "server/blogapi/internal/handler/note"
+	tag "server/blogapi/internal/handler/tag"
 	"server/blogapi/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -105,6 +106,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: note.NoteCreateHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodGet,
+				Path:    "/notes/published",
+				Handler: note.NotePublishedHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/notes/:slug",
+				Handler: note.NoteDetailHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/notes/:slug/html",
+				Handler: note.NoteDetailHtmlHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodPut,
 				Path:    "/notes/:id",
 				Handler: note.NoteUpdateHandler(serverCtx),
@@ -119,10 +135,31 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/notes/:id/publish",
 				Handler: note.NoteToggleHandler(serverCtx),
 			},
+		},
+		rest.WithPrefix("/api"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/notes/published",
-				Handler: note.NotePublishedHandler(serverCtx),
+				Path:    "/tags",
+				Handler: tag.TagListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/tags",
+				Handler: tag.TagCreateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/tags/:id",
+				Handler: tag.TagUpdateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/tags/:id",
+				Handler: tag.TagDeleteHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/api"),

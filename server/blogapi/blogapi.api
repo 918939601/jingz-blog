@@ -138,3 +138,45 @@ service blogapi {
 	delete /notes/:id (NoteDeleteReq) returns (Note)
 }
 
+type Tag {
+	id      int64  `json:"id"`
+	tagName string `json:"tagName"`
+	tagType string `json:"tagType"`
+}
+
+type TagListReq {
+	tagType string `form:"tagType,optional"`
+}
+
+type TagCreateReq {
+	tagName string `json:"tagName"`
+	tagType string `json:"tagType"`
+}
+
+type TagUpdateReq {
+	id      int64  `path:"id"`
+	tagName string `json:"tagName"`
+}
+
+type TagDeleteReq {
+	id int64 `path:"id"`
+}
+
+@server (
+	group:  tag
+	prefix: /api
+)
+service blogapi {
+	@handler TagList
+	get /tags (TagListReq) returns ([]Tag)
+
+	@handler TagCreate
+	post /tags (TagCreateReq) returns (Tag)
+
+	@handler TagUpdate
+	put /tags/:id (TagUpdateReq) returns (Tag)
+
+	@handler TagDelete
+	delete /tags/:id (TagDeleteReq) returns (Tag)
+}
+

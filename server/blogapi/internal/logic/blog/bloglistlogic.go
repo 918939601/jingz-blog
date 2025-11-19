@@ -2,6 +2,8 @@ package blog
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -40,13 +42,44 @@ func (l *BlogListLogic) BlogList(req *types.BlogListReq) (*types.BlogListResp, e
 		return &types.BlogListResp{Items: []types.Blog{}, Total: 0, Page: page, PageSize: size}, nil
 	}
 
-	// Simple query - just get all blogs for now
-	rows, err := db.QueryContext(l.ctx,
-		`SELECT "id","slug","title","content","isPublished","createdAt","updatedAt"
-		 FROM "Blog"
-		 ORDER BY "createdAt" DESC
-		 LIMIT $1 OFFSET $2`,
-		size, offset)
+	// Build query with optional tags filter
+	var query string
+	args := []interface{}{}
+	argIndex := 1
+
+	if req.Tags != "" {
+		// Query with tags filter (case-insensitive)
+		query = `SELECT DISTINCT b."id", b."slug", b."title", b."content", b."isPublished", b."createdAt", b."updatedAt"
+			 FROM "Blog" b
+			 INNER JOIN "_BlogToBlogTag" bbt ON b."id" = bbt."A"
+			 INNER JOIN "BlogTag" bt ON bbt."B" = bt."id"
+			 WHERE LOWER(bt."tagName") IN (`
+
+		tagNames := strings.Split(req.Tags, ",")
+		for i, tag := range tagNames {
+			if i > 0 {
+				query += `, `
+			}
+			query += `LOWER($` + fmt.Sprint(argIndex) + `)`
+			args = append(args, strings.TrimSpace(tag))
+			argIndex++
+		}
+		query += `)
+			 ORDER BY b."createdAt" DESC
+			 LIMIT $` + fmt.Sprint(argIndex) + ` OFFSET $` + fmt.Sprint(argIndex+1)
+		args = append(args, size, offset)
+		logx.Infof("Blog list with tags filter - query: %s, args: %v", query, args)
+	} else {
+		// Query without tags filter
+		query = `SELECT DISTINCT b."id", b."slug", b."title", b."content", b."isPublished", b."createdAt", b."updatedAt"
+			 FROM "Blog" b
+			 ORDER BY b."createdAt" DESC
+			 LIMIT $` + fmt.Sprint(argIndex) + ` OFFSET $` + fmt.Sprint(argIndex+1)
+		args = append(args, size, offset)
+		logx.Infof("Blog list without tags filter - query: %s, args: %v", query, args)
+	}
+
+	rows, err := db.QueryContext(l.ctx, query, args...)
 	if err != nil {
 		logx.Errorf("list query: %v", err)
 		return &types.BlogListResp{Items: []types.Blog{}, Total: 0, Page: page, PageSize: size}, nil
@@ -63,7 +96,7 @@ func (l *BlogListLogic) BlogList(req *types.BlogListReq) (*types.BlogListResp, e
 		}
 		b.CreatedAt = createdAt.UTC().Format(time.RFC3339)
 		b.UpdatedAt = updatedAt.UTC().Format(time.RFC3339)
-		b.Tags = make([]types.BlogTag, 0) // Initialize empty tags array
+		b.Tags = make([]types.BlogTag, 0)
 
 		// Fetch tags for this blog
 		tagRows, err := db.QueryContext(l.ctx,
@@ -87,9 +120,32 @@ func (l *BlogListLogic) BlogList(req *types.BlogListReq) (*types.BlogListResp, e
 		items = append(items, b)
 	}
 
-	// Count total
+	// Count total with same filters
+	var countQuery string
+	countArgs := []interface{}{}
+	countArgIndex := 1
+
+	if req.Tags != "" {
+		countQuery = `SELECT COUNT(DISTINCT b."id") FROM "Blog" b
+                      INNER JOIN "_BlogToBlogTag" bbt ON b."id" = bbt."A"
+                      INNER JOIN "BlogTag" bt ON bbt."B" = bt."id"
+                      WHERE LOWER(bt."tagName") IN (`
+		tagNames := strings.Split(req.Tags, ",")
+		for i, tag := range tagNames {
+			if i > 0 {
+				countQuery += `, `
+			}
+			countQuery += `LOWER($` + fmt.Sprint(countArgIndex) + `)`
+			countArgs = append(countArgs, strings.TrimSpace(tag))
+			countArgIndex++
+		}
+		countQuery += `)`
+	} else {
+		countQuery = `SELECT COUNT(DISTINCT b."id") FROM "Blog" b`
+	}
+
 	var total int64
-	if err := db.QueryRowContext(l.ctx, `SELECT COUNT(1) FROM "Blog"`).Scan(&total); err != nil {
+	if err := db.QueryRowContext(l.ctx, countQuery, countArgs...).Scan(&total); err != nil {
 		logx.Errorf("list count: %v", err)
 		return &types.BlogListResp{Items: items, Total: 0, Page: page, PageSize: size}, nil
 	}

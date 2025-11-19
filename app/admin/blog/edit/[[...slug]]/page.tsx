@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { fetchBlogBySlug } from '@/lib/api/blog'
-import { getBlogTags } from '@/actions/tags'
+import { fetchTags } from '@/lib/api/tag'
 import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { requireAdmin } from '@/lib/auth'
 
@@ -34,7 +34,8 @@ export default async function Page({
     }
   }
 
-  const blogTags = await getBlogTags()
+  const blogTagsDTO = await fetchTags('BLOG')
+  const blogTags = blogTagsDTO.map(t => ({ ...t, tagType: t.tagType as any }))
   const relatedBlogTagNames = article ? (article.tags ?? []).map((v: any) => v.tagName) : []
 
   return (

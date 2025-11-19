@@ -67,7 +67,7 @@ export function BlogTagsContainer({ blogTagList, setSelectedTags }: { blogTagLis
             )
           : (
               blogTags.map((tag, i) => (
-                <CarouselItem className="basis-auto" key={tag.toLowerCase()}>
+                <CarouselItem className="basis-auto" key={`${tag}-${i}`}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0, transition: {

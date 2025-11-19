@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { fetchNotes } from '@/lib/api/note'
+import { fetchTags } from '@/lib/api/tag'
 import Loading from '@/components/shared/loading'
 import NoteListTable from './internal/note-list-table'
 import NoteSearch from './internal/note-search'
@@ -26,10 +27,13 @@ export default function AdminNotePage() {
     staleTime: 1000 * 30,
   })
 
-  // TODO: 从 Go API 获取标签列表
-  // 暂时使用空数组，后续需要实现 Tags API
-  const noteTags: any[] = []
-  const noteTagsPending = false
+  const { data: noteTagsData, isPending: noteTagsPending } = useQuery({
+    queryKey: ['note-tags'],
+    queryFn: () => fetchTags('NOTE'),
+    staleTime: 1000 * 60 * 5, // 5分钟缓存
+  })
+
+  const noteTags = noteTagsData?.map(t => ({ ...t, tagType: t.tagType as any })) ?? []
 
   return (
     <main className="w-full flex flex-col gap-2">

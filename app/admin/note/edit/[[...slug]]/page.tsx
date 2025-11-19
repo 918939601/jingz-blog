@@ -1,5 +1,5 @@
 import { fetchNoteBySlug } from '@/lib/api/note'
-import { getNoteTags } from '@/actions/tags'
+import { fetchTags } from '@/lib/api/tag'
 import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { requireAdmin } from '@/lib/auth'
 import { redirect } from 'next/navigation'
@@ -34,7 +34,8 @@ export default async function Page({
     }
   }
 
-  const noteTags = await getNoteTags()
+  const noteTagsDTO = await fetchTags('NOTE')
+  const noteTags = noteTagsDTO.map(t => ({ ...t, tagType: t.tagType as any }))
   const relatedArticleTagNames = article ? (article.tags ?? []).map((v: any) => v.tagName) : []
 
   return (

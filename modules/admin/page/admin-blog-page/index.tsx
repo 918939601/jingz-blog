@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { fetchBlogs } from '@/lib/api/blog'
+import { fetchTags } from '@/lib/api/tag'
 import Loading from '@/components/shared/loading'
 import BlogListTable from './internal/blog-list-table'
 import BlogSearch from './internal/blog-search'
@@ -26,10 +27,13 @@ export default function AdminBlogPage() {
     staleTime: 1000 * 30,
   })
 
-  // TODO: 从 Go API 获取标签列表
-  // 暂时使用空数组，后续需要实现 Tags API
-  const blogTags: any[] = []
-  const blogTagsPending = false
+  const { data: blogTagsData, isPending: blogTagsPending } = useQuery({
+    queryKey: ['blog-tags'],
+    queryFn: () => fetchTags('BLOG'),
+    staleTime: 1000 * 60 * 5, // 5分钟缓存
+  })
+
+  const blogTags = blogTagsData?.map(t => ({ ...t, tagType: t.tagType as any })) ?? []
 
   return (
     <main className="w-full flex flex-col gap-2">

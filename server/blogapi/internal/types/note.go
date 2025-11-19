@@ -31,8 +31,13 @@ type NoteDeleteReq struct {
 	Id int64 `path:"id"`
 }
 
+type NoteDetailReq struct {
+	Slug string `path:"slug"`
+}
+
 type NoteListReq struct {
 	Query    string `form:"query,optional"`
+	Tags     string `form:"tags,optional"`
 	Page     int64  `form:"page,optional"`
 	PageSize int64  `form:"pageSize,optional"`
 }
