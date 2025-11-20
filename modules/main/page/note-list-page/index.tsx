@@ -1,7 +1,11 @@
-import { getAllShowNotes } from '@/actions/notes'
+'use client'
+
 import * as motion from 'motion/react-client'
+import { fetchNotes } from '@/lib/api/note'
 import NoteListItem from './internal/note-list-item'
 import type { Variants } from 'motion/react'
+import { useQuery } from '@tanstack/react-query'
+import Loading from '@/components/shared/loading'
 
 const containerVariants = {
   hidden: {},
@@ -25,8 +29,18 @@ const itemVariants: Variants = {
   },
 }
 
-export default async function NoteListPage() {
-  const allNotes = await getAllShowNotes()
+export default function NoteListPage() {
+  const { data: response, isPending } = useQuery({
+    queryKey: ['note-list-public'],
+    queryFn: () => fetchNotes({ pageSize: 1000 }),
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const allNotes = response?.items?.filter(n => n.isPublished) || []
+
+  if (isPending) {
+    return <Loading />
+  }
 
   if (allNotes.length === 0) {
     return <p className="m-auto">虚无。</p>
@@ -45,7 +59,7 @@ export default async function NoteListPage() {
         <motion.div variants={itemVariants} key={v.id}>
           <NoteListItem
             noteTitle={v.title}
-            createdAt={v.createdAt}
+            createdAt={new Date(v.createdAt)}
             slug={v.slug}
           />
         </motion.div>

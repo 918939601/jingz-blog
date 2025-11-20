@@ -1,11 +1,11 @@
 'use client'
 
-import type { NoteListItem } from '@/actions/notes/type'
+import type { NoteDTO } from '@/lib/api/note'
 import { motion } from 'motion/react'
 import { DataTable } from './data-table'
 import { columns } from './note-table-column'
 
-export default function NoteListTable({ noteList }: { noteList: NoteListItem[] }) {
+export default function NoteListTable({ noteList }: { noteList: NoteDTO[] }) {
   return (
     <motion.main
       className="h-full"

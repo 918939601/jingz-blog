@@ -1,6 +1,6 @@
 'use client'
 
-import { getAllTags, getQueryTags } from '@/actions/tags'
+import { fetchTags } from '@/lib/api/tag'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import TagListTable from './internal/tag-list-table'
@@ -10,7 +10,7 @@ export default function AdminTagPage() {
   const [query, setQuery] = useState('')
   const { isPending, data } = useQuery({
     queryKey: ['tags', query],
-    queryFn: () => query.trim() ? getQueryTags(query) : getAllTags(),
+    queryFn: () => fetchTags(),
     staleTime: 1000 * 30,
   })
 

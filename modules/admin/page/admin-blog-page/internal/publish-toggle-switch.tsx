@@ -1,7 +1,7 @@
-import { toggleBlogPublishedById } from '@/actions/blogs'
+import { toggleBlogPublished } from '@/lib/api/blog'
 import { Switch } from '@/components/ui/switch'
-import { useQueryClient } from '@tanstack/react-query'
-import { useState, useTransition } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 export default function PublishToggleSwitch({
@@ -12,32 +12,32 @@ export default function PublishToggleSwitch({
   isPublished: boolean
 }) {
   const [isPublished, setIsPublished] = useState(initial)
-  const [isPending, startTransition] = useTransition()
   const queryClient = useQueryClient()
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (newStatus: boolean) => toggleBlogPublished(blogId, newStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['blog-list'],
+        exact: false,
+      })
+      toast.success(`更新成功`)
+    },
+    onError: (error) => {
+      setIsPublished(!isPublished)
+      if (error instanceof Error) {
+        toast.error(`发布状态更新失败 ${error?.message}`)
+      }
+      else {
+        toast.error(`发布状态更新失败`)
+      }
+    },
+  })
 
   const handleToggle = async () => {
     const newStatus = !isPublished
     setIsPublished(newStatus)
-
-    startTransition(async () => {
-      try {
-        await toggleBlogPublishedById(blogId, newStatus)
-        queryClient.invalidateQueries({
-          queryKey: ['blog-list'],
-          exact: false,
-        })
-        toast.success(`更新成功`)
-      }
-      catch (error) {
-        setIsPublished(!newStatus)
-        if (error instanceof Error) {
-          toast.error(`发布状态更新失败 ${error?.message}`)
-        }
-        else {
-          toast.error(`发布状态更新失败`)
-        }
-      }
-    })
+    mutate(newStatus)
   }
 
   return (

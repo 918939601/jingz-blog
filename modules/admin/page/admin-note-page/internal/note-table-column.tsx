@@ -1,6 +1,6 @@
 'use client'
 
-import type { NoteListItem } from '@/actions/notes/type'
+import type { NoteDTO } from '@/lib/api/note'
 import type { ColumnDef } from '@tanstack/react-table'
 import TagItemBadge from '@/components/shared/tag-item-badge'
 import { Button } from '@/components/ui/button'
@@ -17,7 +17,7 @@ import {
 import ActionButtons from './action-buttons'
 import PublishToggleSwitch from './publish-toggle-switch'
 
-export const columns: ColumnDef<NoteListItem>[] = [
+export const columns: ColumnDef<NoteDTO>[] = [
   {
     accessorKey: 'title',
     header: () => {

@@ -1,5 +1,5 @@
-import { deleteBlogById } from '@/actions/blogs'
-import { deleteNoteById } from '@/actions/notes'
+import { deleteBlog } from '@/lib/api/blog'
+import { deleteNote } from '@/lib/api/note'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -26,27 +26,32 @@ export default function DeleteArticleModal() {
 
   const queryClient = useQueryClient()
   const { mutate, isPending } = useMutation({
-    mutationFn: handleDeleteArticle,
-    onSuccess: (_, variables) => {
-      toast.success(`删除文章「${variables.title}」成功`)
-      queryClient.invalidateQueries({ queryKey: ['tags'] })
-      switch (variables.articleType) {
+    mutationFn: async (params: { id: number; articleType: TagType }) => {
+      switch (params.articleType) {
         case TagType.BLOG:
-          queryClient.invalidateQueries({ queryKey: ['blog-list'] })
-          break
+          return await deleteBlog(params.id)
         case TagType.NOTE:
-          queryClient.invalidateQueries({ queryKey: ['note-list'] })
-          break
+          return await deleteNote(params.id)
         default:
-          throw new Error(`删除文章类型不匹配`)
+          throw new Error(`文章类型不正确`)
       }
     },
-    onError: (error, variables) => {
+    onSuccess: () => {
+      toast.success(`删除文章成功`)
+      queryClient.invalidateQueries({ queryKey: ['tags'] })
+      if (articleType === TagType.BLOG) {
+        queryClient.invalidateQueries({ queryKey: ['blog-list'] })
+      }
+      else if (articleType === TagType.NOTE) {
+        queryClient.invalidateQueries({ queryKey: ['note-list'] })
+      }
+    },
+    onError: (error) => {
       if (error instanceof Error) {
-        toast.error(`删除文章「${variables.title}」失败~ ${error.message}`)
+        toast.error(`删除文章失败~ ${error.message}`)
       }
       else {
-        toast.error(`删除文章「${variables.title}」出错~`)
+        toast.error(`删除文章出错~`)
       }
     },
   })
@@ -55,7 +60,7 @@ export default function DeleteArticleModal() {
     if (!id || !articleType || !title) {
       return
     }
-    mutate({ id, articleType, title })
+    mutate({ id, articleType })
     onModalClose()
   }
 
@@ -83,17 +88,4 @@ export default function DeleteArticleModal() {
       </DialogContent>
     </Dialog>
   )
-}
-
-async function handleDeleteArticle({ id, articleType }: DeleteArticleParams) {
-  switch (articleType) {
-    case TagType.BLOG:
-      await deleteBlogById(id)
-      break
-    case TagType.NOTE:
-      await deleteNoteById(id)
-      break
-    default:
-      throw new Error(`文章类型不正确`)
-  }
 }

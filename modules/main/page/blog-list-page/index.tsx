@@ -1,7 +1,11 @@
+'use client'
+
 import * as motion from 'motion/react-client'
-import { getAllShowBlogs } from '@/actions/blogs'
+import { fetchBlogs } from '@/lib/api/blog'
 import BlogListItem from './internal/blog-list-item'
 import type { Variants } from 'motion/react'
+import { useQuery } from '@tanstack/react-query'
+import Loading from '@/components/shared/loading'
 
 const containerVariants = {
   hidden: {},
@@ -25,8 +29,18 @@ const itemVariants: Variants = {
   },
 }
 
-export default async function BlogListPage() {
-  const allBlogs = await getAllShowBlogs()
+export default function BlogListPage() {
+  const { data: response, isPending } = useQuery({
+    queryKey: ['blog-list-public'],
+    queryFn: () => fetchBlogs({ pageSize: 1000 }),
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const allBlogs = response?.items?.filter(b => b.isPublished) || []
+
+  if (isPending) {
+    return <Loading />
+  }
 
   if (allBlogs.length === 0) {
     return <p className="m-auto">虚无。</p>
@@ -45,7 +59,7 @@ export default async function BlogListPage() {
         <motion.div variants={itemVariants} key={v.id}>
           <BlogListItem
             blogTitle={v.title}
-            createdAt={v.createdAt}
+            createdAt={new Date(v.createdAt)}
             slug={v.slug}
           />
         </motion.div>

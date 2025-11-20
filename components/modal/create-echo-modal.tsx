@@ -3,7 +3,6 @@
 import type { CreateEchoDTO } from '@/lib/schemas/echo'
 import { createEcho } from '@/lib/api/echo'
 import { CreateEchoSchema } from '@/lib/schemas/echo'
-import type { EchoDTO } from '@/lib/api/echo'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

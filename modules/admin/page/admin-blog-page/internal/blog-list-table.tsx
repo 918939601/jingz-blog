@@ -1,11 +1,11 @@
 'use client'
 
-import type { BlogListItem } from '@/actions/blogs/type'
+import type { BlogDTO } from '@/lib/api/blog'
 import { motion } from 'motion/react'
 import { columns } from './blog-table-column'
 import { DataTable } from './data-table'
 
-export default function BlogListTable({ blogList }: { blogList: BlogListItem[] }) {
+export default function BlogListTable({ blogList }: { blogList: BlogDTO[] }) {
   return (
     <motion.main
       className="h-full"

@@ -1,8 +1,8 @@
-import { ThemeProvider } from '@/components/ui/theme-provider'
 import { metadata } from '@/config/constant'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
+import RootLayoutClient from './layout-client'
 
 export { metadata }
 
@@ -14,14 +14,9 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="font-ye-font">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <RootLayoutClient>
           {children}
-        </ThemeProvider>
+        </RootLayoutClient>
         <Analytics />
         <SpeedInsights />
       </body>

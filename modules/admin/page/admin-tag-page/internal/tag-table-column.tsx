@@ -1,6 +1,10 @@
 'use client'
 
-import type { WithCountTagDTO } from '@/actions/tags/type'
+import type { TagDTO } from '@/lib/api/tag'
+
+interface TagWithCount extends TagDTO {
+  count?: number
+}
 import type { ColumnDef } from '@tanstack/react-table'
 import TagItemBadge from '@/components/shared/tag-item-badge'
 import { Badge } from '@/components/ui/badge'
@@ -16,7 +20,7 @@ import {
 import ActionButtons from './action-buttons'
 
 // * 后序整一个分类排序
-export const columns: ColumnDef<WithCountTagDTO>[] = [
+export const columns: ColumnDef<TagWithCount>[] = [
   {
     accessorKey: 'tagName',
     header: () => {
@@ -73,9 +77,11 @@ export const columns: ColumnDef<WithCountTagDTO>[] = [
       )
     },
     cell: ({ row }) => {
-      const relatedArticleCount = row.original.count
+      const relatedArticleCount = row.original.count ?? 0
       return (
-        <div className="font-mono max-w-36 flex justify-center text-base">{relatedArticleCount}</div>
+        <div className="font-mono max-w-36 flex justify-center text-base">
+          {relatedArticleCount > 0 ? relatedArticleCount : '0'}
+        </div>
       )
     },
   },
@@ -92,7 +98,7 @@ export const columns: ColumnDef<WithCountTagDTO>[] = [
     cell: ({ row }) => {
       const { id, tagName, tagType } = row.original
 
-      return <ActionButtons id={id} tagName={tagName} tagType={tagType} />
+      return <ActionButtons id={id} tagName={tagName} tagType={tagType as any} />
     },
   },
 ]

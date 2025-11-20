@@ -1,11 +1,13 @@
 'use client'
 
-import type { CreateTagDTO } from '@/actions/tags/type'
-import {
-  createBlogTag,
-  createNoteTag,
-} from '@/actions/tags'
-import { CreateTagSchema } from '@/actions/tags/type'
+import { createTag } from '@/lib/api/tag'
+import { TagType } from '@prisma/client'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -31,12 +33,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useModalStore } from '@/store/use-modal-store'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { TagType } from '@prisma/client'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
+
+const CreateTagSchema = z.object({
+  tagName: z.string().min(1, '标签名不能为空'),
+  tagType: z.nativeEnum(TagType),
+})
+
+type CreateTagDTO = z.infer<typeof CreateTagSchema>
 
 export default function CreateTagModal() {
   const { modalType, onModalClose } = useModalStore()
@@ -44,7 +47,7 @@ export default function CreateTagModal() {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: handleCreateTag,
+    mutationFn: (values: CreateTagDTO) => createTag(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] })
       toast.success(`创建成功`)
@@ -137,17 +140,4 @@ export default function CreateTagModal() {
       </DialogContent>
     </Dialog>
   )
-}
-
-async function handleCreateTag(values: CreateTagDTO) {
-  switch (values.tagType) {
-    case TagType.BLOG:
-      await createBlogTag(values.tagName)
-      break
-    case TagType.NOTE:
-      await createNoteTag(values.tagName)
-      break
-    default:
-      throw new Error('tag type 不匹配')
-  }
 }

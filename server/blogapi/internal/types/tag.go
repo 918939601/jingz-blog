@@ -7,6 +7,7 @@ type Tag struct {
 	Id      int64  `json:"id"`
 	TagName string `json:"tagName"`
 	TagType string `json:"tagType"`
+	Count   int64  `json:"count,omitempty"`
 }
 
 type TagListReq struct {

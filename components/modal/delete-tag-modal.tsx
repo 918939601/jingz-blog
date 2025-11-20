@@ -1,5 +1,4 @@
-import type { DeleteTagDTO } from '@/actions/tags/type'
-import { deleteBlogTagById, deleteNoteTagById } from '@/actions/tags'
+import { deleteTag } from '@/lib/api/tag'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,6 +12,12 @@ import { TagType } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+interface DeleteTagDTO {
+  id: number
+  tagName: string
+  tagType: TagType
+}
+
 export default function DeleteTagModal() {
   const { modalType, payload, onModalClose } = useModalStore()
   const isModalOpen = modalType === 'deleteTagModal'
@@ -22,17 +27,17 @@ export default function DeleteTagModal() {
 
   const queryClient = useQueryClient()
   const { mutate, isPending } = useMutation({
-    mutationFn: handleDeleteTag,
-    onSuccess: (_, variables) => {
+    mutationFn: (id: number) => deleteTag(id),
+    onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['tags'] })
-      toast.success(`删除标签 #${variables?.tagName} 成功`)
+      toast.success(`删除标签成功`)
     },
-    onError: (error, variables) => {
+    onError: (error) => {
       if (error instanceof Error) {
-        toast.error(`删除标签 ${variables?.tagName} 失败~ ${error.message}`)
+        toast.error(`删除标签失败~ ${error.message}`)
       }
       else {
-        toast.error(`删除标签 ${variables?.tagName} 出错~`)
+        toast.error(`删除标签出错~`)
       }
     },
   })
@@ -42,7 +47,7 @@ export default function DeleteTagModal() {
       toast.error(`标签信息不存在，删除出错`)
       return
     }
-    mutate(values)
+    mutate(values.id)
     onModalClose()
   }
 
@@ -72,17 +77,4 @@ export default function DeleteTagModal() {
       </DialogContent>
     </Dialog>
   )
-}
-
-async function handleDeleteTag({ tagType, id }: DeleteTagDTO) {
-  switch (tagType) {
-    case TagType.BLOG:
-      await deleteBlogTagById(id)
-      break
-    case TagType.NOTE:
-      await deleteNoteTagById(id)
-      break
-    default:
-      throw new Error('标签类型错误或 id 不存在!')
-  }
 }

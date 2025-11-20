@@ -51,6 +51,17 @@ func (l *TagListLogic) TagList(req *types.TagListReq) ([]types.Tag, error) {
 			logx.Errorf("scan tag: %v", err)
 			continue
 		}
+		
+		// Count associated blogs
+		var count int64
+		countErr := db.QueryRowContext(l.ctx,
+			`SELECT COUNT(*) FROM "_BlogToBlogTag" WHERE "B" = $1`,
+			tag.Id,
+		).Scan(&count)
+		if countErr == nil {
+			tag.Count = count
+		}
+		
 		tags = append(tags, tag)
 	}
 
@@ -77,6 +88,17 @@ func (l *TagListLogic) TagList(req *types.TagListReq) ([]types.Tag, error) {
 			logx.Errorf("scan tag: %v", err)
 			continue
 		}
+		
+		// Count associated notes
+		var count int64
+		countErr := db.QueryRowContext(l.ctx,
+			`SELECT COUNT(*) FROM "_NoteToNoteTag" WHERE "B" = $1`,
+			tag.Id,
+		).Scan(&count)
+		if countErr == nil {
+			tag.Count = count
+		}
+		
 		tags = append(tags, tag)
 	}
 

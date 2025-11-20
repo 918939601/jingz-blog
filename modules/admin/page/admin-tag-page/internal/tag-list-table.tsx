@@ -1,12 +1,12 @@
 'use client'
 
-import type { Tag } from '@/actions/tags/type'
+import type { TagDTO } from '@/lib/api/tag'
 import Loading from '@/components/shared/loading'
 import { motion } from 'motion/react'
 import { DataTable } from './data-table'
 import { columns } from './tag-table-column'
 
-export default function TagListTable({ data, isPending }: { data: Tag[], isPending: boolean }) {
+export default function TagListTable({ data, isPending }: { data: TagDTO[], isPending: boolean }) {
   return isPending
     ? <Loading />
     : (
