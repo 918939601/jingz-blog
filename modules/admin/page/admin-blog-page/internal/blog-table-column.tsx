@@ -98,7 +98,7 @@ export const columns: ColumnDef<BlogDTO>[] = [
       )
     },
     cell: ({ row }) => {
-      const prettyTime = prettyDateTime(row.original.createdAt)
+      const prettyTime = prettyDateTime(new Date(row.original.createdAt))
       return <time>{prettyTime}</time>
     },
   },
