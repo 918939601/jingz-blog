@@ -10,6 +10,7 @@ import (
 	echo "server/blogapi/internal/handler/echo"
 	note "server/blogapi/internal/handler/note"
 	tag "server/blogapi/internal/handler/tag"
+	weather "server/blogapi/internal/handler/weather"
 	"server/blogapi/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -160,6 +161,27 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodDelete,
 				Path:    "/tags/:id",
 				Handler: tag.TagDeleteHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/location",
+				Handler: weather.LocationHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/weather",
+				Handler: weather.WeatherHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/weather/info",
+				Handler: weather.WeatherInfoHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/api"),

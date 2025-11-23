@@ -180,3 +180,48 @@ service blogapi {
 	delete /tags/:id (TagDeleteReq) returns (Tag)
 }
 
+
+type Location {
+	city        string  `json:"city"`
+	country     string  `json:"country"`
+	countryCode string  `json:"countryCode"`
+	latitude    float64 `json:"latitude"`
+	longitude   float64 `json:"longitude"`
+	timezone    string  `json:"timezone"`
+}
+
+type Weather {
+	temperature float64 `json:"temperature"`
+	description string  `json:"description"`
+	feelsLike   float64 `json:"feelsLike"`
+	humidity    int     `json:"humidity"`
+	windSpeed   float64 `json:"windSpeed"`
+	icon        string  `json:"icon"`
+	pressure    float64 `json:"pressure"`
+	visibility  float64 `json:"visibility"`
+}
+
+type WeatherInfo {
+	location Location `json:"location"`
+	weather  Weather  `json:"weather"`
+}
+
+type WeatherReq {
+	latitude  float64 `form:"latitude"`
+	longitude float64 `form:"longitude"`
+}
+
+@server (
+	group:  weather
+	prefix: /api
+)
+service blogapi {
+	@handler Location
+	get /location returns (Location)
+
+	@handler Weather
+	get /weather (WeatherReq) returns (Weather)
+
+	@handler WeatherInfo
+	get /weather/info returns (WeatherInfo)
+}
