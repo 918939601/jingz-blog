@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	_ "github.com/lib/pq"
 
 	"server/blogapi/internal/config"
