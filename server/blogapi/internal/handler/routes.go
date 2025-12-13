@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	ai "server/blogapi/internal/handler/ai"
 	blog "server/blogapi/internal/handler/blog"
 	echo "server/blogapi/internal/handler/echo"
 	note "server/blogapi/internal/handler/note"
@@ -182,6 +183,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/weather/info",
 				Handler: weather.WeatherInfoHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/ai/ask",
+				Handler: ai.AskAiHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/api"),

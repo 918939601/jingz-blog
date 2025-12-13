@@ -4,6 +4,8 @@ import ArticleDisplayPage from '@/components/shared/article-display-page'
 import CommentCard from '@/components/shared/comment-card'
 import HorizontalDividingLine from '@/components/shared/horizontal-dividing-line'
 import ScrollIndicator from '@/components/shared/scroll-indicator'
+import AskAiFloating from '@/components/shared/ask-ai-floating'
+import { processor } from '@/lib/markdown'
 
 export const dynamicParams = true
 
@@ -42,7 +44,7 @@ export default async function Page({
     notFound()
 
   const { content, title, createdAt, tags, id } = article
-
+  const htmlContent = String(await processor.process(content || ''))
   const tagNames = (tags || []).map(v => v.tagName)
 
   return (
@@ -50,12 +52,13 @@ export default async function Page({
       <ArticleDisplayPage
         title={title}
         createdAt={createdAt}
-        content={content}
+        content={htmlContent}
         tags={tagNames}
       />
       <HorizontalDividingLine fill="#EC7FA9" />
       <CommentCard term={`${title}-blog-${id}`} />
       <ScrollIndicator />
+      <AskAiFloating title={title} tags={tagNames} />
     </div>
   )
 }

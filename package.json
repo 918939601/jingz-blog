@@ -13,7 +13,8 @@
     "lint:es:fix": "eslint --fix",
     "ts:check": "tsc --noEmit",
     "postinstall": "prisma generate",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "seed:sample": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@bytemd/plugin-breaks": "^1.22.0",

@@ -48,3 +48,6 @@ todo/
 
 # 测试的 markdown 文件
 /md
+
+# Go backend config with secrets
+server/blogapi/etc/blogapi.yaml

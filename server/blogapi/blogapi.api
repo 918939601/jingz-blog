@@ -225,3 +225,30 @@ service blogapi {
 	@handler WeatherInfo
 	get /weather/info returns (WeatherInfo)
 }
+
+type AskAiReq {
+	question string `json:"question"`
+	context  AiContext `json:"context,optional"`
+	provider string `json:"provider,optional"`
+}
+
+type AiContext {
+	title string `json:"title,optional"`
+	tags  []string `json:"tags,optional"`
+}
+
+type AskAiResp {
+	ok       bool   `json:"ok"`
+	answer   string `json:"answer,optional"`
+	message  string `json:"message,optional"`
+	provider string `json:"provider,optional"`
+}
+
+@server (
+	group:  ai
+	prefix: /api
+)
+service blogapi {
+	@handler AskAi
+	post /ai/ask (AskAiReq) returns (AskAiResp)
+}

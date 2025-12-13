@@ -71,24 +71,24 @@ func (l *LocationLogic) GetLocationByIP(ip string) (*types.LocationDTO, error) {
 	if l.svcCtx.Config.DefaultCity != "" {
 		defaultCity = l.svcCtx.Config.DefaultCity
 	}
-	
+
 	province := defaultProvince
 	city := defaultCity
-	
+
 	if len(amapResp.Province) > 0 {
 		if provinceStr, ok := amapResp.Province[0].(string); ok {
 			province = provinceStr
 			logx.Infof("Extracted province from Amap: %s", province)
 		}
 	}
-	
+
 	if len(amapResp.City) > 0 {
 		if cityStr, ok := amapResp.City[0].(string); ok {
 			city = cityStr
 			logx.Infof("Extracted city from Amap: %s", city)
 		}
 	}
-	
+
 	// For localhost development, log which location is being used
 	if ip == "127.0.0.1" {
 		logx.Infof("Running on localhost, using location: %s %s (default: %s %s)", province, city, defaultProvince, defaultCity)
@@ -190,7 +190,7 @@ func (l *LocationLogic) GetLocationByCoordinates(latitude, longitude float64) (*
 
 	status, ok := regeoResp["status"].(string)
 	logx.Infof("Amap response status: %s", status)
-	
+
 	if !ok || status != "1" {
 		logx.Errorf("Amap reverse geocoding error: status=%v, info=%v, returning default location", regeoResp["status"], regeoResp["info"])
 		return l.GetDefaultLocation(), nil
@@ -198,18 +198,18 @@ func (l *LocationLogic) GetLocationByCoordinates(latitude, longitude float64) (*
 
 	// Extract province and city from nested structure
 	var province, city string
-	
+
 	if regeocode, ok := regeoResp["regeocode"].(map[string]interface{}); ok {
 		logx.Infof("Found regeocode in response")
 		if addressComponent, ok := regeocode["addressComponent"].(map[string]interface{}); ok {
 			logx.Infof("Found addressComponent: %v", addressComponent)
-			
+
 			// Extract province (一级地区)
 			if provinceVal, ok := addressComponent["province"].(string); ok && provinceVal != "" {
 				province = provinceVal
 				logx.Infof("Extracted province: %s", province)
 			}
-			
+
 			// Extract city/district (二级地区) - priority: district > city
 			if district, ok := addressComponent["district"].(string); ok && district != "" {
 				city = district
@@ -220,7 +220,7 @@ func (l *LocationLogic) GetLocationByCoordinates(latitude, longitude float64) (*
 			}
 		}
 	}
-	
+
 	// Fallback: try to extract from formatted_address
 	if city == "" || province == "" {
 		if regeocode, ok := regeoResp["regeocode"].(map[string]interface{}); ok {
@@ -241,7 +241,7 @@ func (l *LocationLogic) GetLocationByCoordinates(latitude, longitude float64) (*
 			}
 		}
 	}
-	
+
 	if province == "" || city == "" {
 		logx.Infof("Missing province or city in response. province=%s, city=%s. Full response: %v", province, city, regeoResp)
 	}
