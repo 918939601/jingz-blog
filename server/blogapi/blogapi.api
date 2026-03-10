@@ -1,0 +1,254 @@
+syntax = "v1"
+
+type Echo {
+	id          int64  `json:"id"`
+	reference   string `json:"reference"`
+	content     string `json:"content"`
+	isPublished bool   `json:"isPublished"`
+	createdAt   string `json:"createdAt"`
+}
+
+type EchoListReq {
+	query    string `form:"query,optional"`
+	page     int64  `form:"page,optional"`
+	pageSize int64  `form:"pageSize,optional"`
+}
+
+type EchoListResp {
+	items    []Echo `json:"items"`
+	total    int64  `json:"total"`
+	page     int64  `json:"page"`
+	pageSize int64  `json:"pageSize"`
+}
+
+type EchoCreateReq {
+	reference   string `json:"reference"`
+	content     string `json:"content"`
+	isPublished bool   `json:"isPublished"`
+}
+
+type EchoUpdateReq {
+	id          int64  `path:"id"`
+	reference   string `json:"reference"`
+	content     string `json:"content"`
+	isPublished bool   `json:"isPublished"`
+}
+
+type EchoToggleReq {
+	id          int64 `path:"id"`
+	isPublished bool  `json:"isPublished"`
+}
+
+type EchoDeleteReq {
+	id int64 `path:"id"`
+}
+
+@server (
+	group:  echo
+	prefix: /api
+)
+service blogapi {
+	@handler EchoList
+	get /echos (EchoListReq) returns (EchoListResp)
+
+	@handler EchoPublished
+	get /echos/published returns ([]Echo)
+
+	@handler EchoCreate
+	post /echos (EchoCreateReq) returns (Echo)
+
+	@handler EchoUpdate
+	put /echos/:id (EchoUpdateReq) returns (Echo)
+
+	@handler EchoToggle
+	patch /echos/:id/publish (EchoToggleReq) returns (Echo)
+
+	@handler EchoDelete
+	delete /echos/:id (EchoDeleteReq) returns (Echo)
+}
+
+type Note {
+	id          int64  `json:"id"`
+	slug        string `json:"slug"`
+	title       string `json:"title"`
+	content     string `json:"content"`
+	isPublished bool   `json:"isPublished"`
+	createdAt   string `json:"createdAt"`
+}
+
+type NoteListReq {
+	query    string `form:"query,optional"`
+	page     int64  `form:"page,optional"`
+	pageSize int64  `form:"pageSize,optional"`
+}
+
+type NoteListResp {
+	items    []Note `json:"items"`
+	total    int64  `json:"total"`
+	page     int64  `json:"page"`
+	pageSize int64  `json:"pageSize"`
+}
+
+type NoteCreateReq {
+	slug        string `json:"slug"`
+	title       string `json:"title"`
+	content     string `json:"content"`
+	isPublished bool   `json:"isPublished"`
+}
+
+type NoteUpdateReq {
+	id                int64    `path:"id"`
+	slug              string   `json:"slug,optional"`
+	title             string   `json:"title,optional"`
+	content           string   `json:"content,optional"`
+	isPublished       bool     `json:"isPublished,optional"`
+	relatedTagNames   []string `json:"relatedTagNames,optional"`
+}
+
+type NoteToggleReq {
+	id          int64 `path:"id"`
+	isPublished bool  `json:"isPublished"`
+}
+
+type NoteDeleteReq {
+	id int64 `path:"id"`
+}
+
+@server (
+	group:  note
+	prefix: /api
+)
+service blogapi {
+	@handler NoteList
+	get /notes (NoteListReq) returns (NoteListResp)
+
+	@handler NotePublished
+	get /notes/published returns ([]Note)
+
+	@handler NoteCreate
+	post /notes (NoteCreateReq) returns (Note)
+
+	@handler NoteUpdate
+	put /notes/:id (NoteUpdateReq) returns (Note)
+
+	@handler NoteToggle
+	patch /notes/:id/publish (NoteToggleReq) returns (Note)
+
+	@handler NoteDelete
+	delete /notes/:id (NoteDeleteReq) returns (Note)
+}
+
+type Tag {
+	id      int64  `json:"id"`
+	tagName string `json:"tagName"`
+	tagType string `json:"tagType"`
+}
+
+type TagListReq {
+	tagType string `form:"tagType,optional"`
+}
+
+type TagCreateReq {
+	tagName string `json:"tagName"`
+	tagType string `json:"tagType"`
+}
+
+type TagUpdateReq {
+	id      int64  `path:"id"`
+	tagName string `json:"tagName"`
+}
+
+type TagDeleteReq {
+	id int64 `path:"id"`
+}
+
+@server (
+	group:  tag
+	prefix: /api
+)
+service blogapi {
+	@handler TagList
+	get /tags (TagListReq) returns ([]Tag)
+
+	@handler TagCreate
+	post /tags (TagCreateReq) returns (Tag)
+
+	@handler TagUpdate
+	put /tags/:id (TagUpdateReq) returns (Tag)
+
+	@handler TagDelete
+	delete /tags/:id (TagDeleteReq) returns (Tag)
+}
+
+
+type Location {
+	city        string  `json:"city"`
+	country     string  `json:"country"`
+	countryCode string  `json:"countryCode"`
+	latitude    float64 `json:"latitude"`
+	longitude   float64 `json:"longitude"`
+	timezone    string  `json:"timezone"`
+}
+
+type Weather {
+	temperature float64 `json:"temperature"`
+	description string  `json:"description"`
+	feelsLike   float64 `json:"feelsLike"`
+	humidity    int     `json:"humidity"`
+	windSpeed   float64 `json:"windSpeed"`
+	icon        string  `json:"icon"`
+	pressure    float64 `json:"pressure"`
+	visibility  float64 `json:"visibility"`
+}
+
+type WeatherInfo {
+	location Location `json:"location"`
+	weather  Weather  `json:"weather"`
+}
+
+type WeatherReq {
+	latitude  float64 `form:"latitude"`
+	longitude float64 `form:"longitude"`
+}
+
+@server (
+	group:  weather
+	prefix: /api
+)
+service blogapi {
+	@handler Location
+	get /location returns (Location)
+
+	@handler Weather
+	get /weather (WeatherReq) returns (Weather)
+
+	@handler WeatherInfo
+	get /weather/info returns (WeatherInfo)
+}
+
+type AskAiReq {
+	question string `json:"question"`
+	context  AiContext `json:"context,optional"`
+	provider string `json:"provider,optional"`
+}
+
+type AiContext {
+	title string `json:"title,optional"`
+	tags  []string `json:"tags,optional"`
+}
+
+type AskAiResp {
+	ok       bool   `json:"ok"`
+	answer   string `json:"answer,optional"`
+	message  string `json:"message,optional"`
+	provider string `json:"provider,optional"`
+}
+
+@server (
+	group:  ai
+	prefix: /api
+)
+service blogapi {
+	@handler AskAi
+	post /ai/ask (AskAiReq) returns (AskAiResp)
+}
