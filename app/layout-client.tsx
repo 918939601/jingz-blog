@@ -9,7 +9,20 @@ export default function RootLayoutClient({
 }: {
   children: ReactNode
 }) {
-  const queryClient = useMemo(() => new QueryClient(), [])
+  const queryClient = useMemo(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5, // 5 分钟
+            gcTime: 1000 * 60 * 10, // 10 分钟
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+    []
+  )
 
   return (
     <QueryClientProvider client={queryClient}>

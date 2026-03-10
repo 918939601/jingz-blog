@@ -7,6 +7,13 @@ import EchoCard from './internal/echo-card'
 import TechStack from './internal/tech-stack'
 import YeAvatar from './internal/ye-avatar'
 
+// 天气组件加载中的占位符
+function WeatherWidgetSkeleton() {
+  return (
+    <div className="w-48 h-64 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
+  )
+}
+
 export default async function MainLayoutContainer() {
   const allPublishedEcho = (await fetchPublishedEchos())
   .map(e => ({ ...e, createdAt: new Date(e.createdAt) }));
@@ -14,7 +21,7 @@ export default async function MainLayoutContainer() {
   return (
     <div className="relative">
       {/* Weather Widget - Fixed on desktop, sticky on mobile */}
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="fixed right-4 top-4 z-40 hidden lg:block"><WeatherWidgetSkeleton /></div>}>
         <div className="fixed right-4 top-4 z-40 hidden lg:block">
           <WeatherWidget />
         </div>
@@ -35,7 +42,7 @@ export default async function MainLayoutContainer() {
         <TechStack />
 
         {/* Weather Widget - Mobile version */}
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="w-full px-4 lg:hidden"><WeatherWidgetSkeleton /></div>}>
           <div className="w-full px-4 lg:hidden">
             <WeatherWidget />
           </div>

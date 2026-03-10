@@ -3,9 +3,9 @@
 import * as motion from 'motion/react-client'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Variants } from 'motion/react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Loading from '@/components/shared/loading'
-import { fetchNotes } from '@/lib/api/note'
+import { fetchNotes, fetchNoteBySlug } from '@/lib/api/note'
 import NoteListItem from './internal/note-list-item'
 
 const containerVariants = {
@@ -31,6 +31,7 @@ const itemVariants: Variants = {
 }
 
 export default function NoteListPage() {
+  const queryClient = useQueryClient()
   const { data: response, isPending } = useQuery({
     queryKey: ['note-list-public'],
     queryFn: () => fetchNotes({ pageSize: 1000 }),
@@ -44,6 +45,19 @@ export default function NoteListPage() {
         .map(n => ({ ...n, createdAt: new Date(n.createdAt) })) || [],
     [response],
   )
+
+  // 预加载所有笔记详情
+  useEffect(() => {
+    if (publishedNotes.length > 0) {
+      publishedNotes.forEach((note) => {
+        queryClient.prefetchQuery({
+          queryKey: ['note', note.slug],
+          queryFn: () => fetchNoteBySlug(note.slug),
+          staleTime: 1000 * 60 * 5,
+        })
+      })
+    }
+  }, [publishedNotes, queryClient])
 
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)

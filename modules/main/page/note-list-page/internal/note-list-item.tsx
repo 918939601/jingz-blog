@@ -1,6 +1,8 @@
 import ScaleUnderline from '@/components/shared/scale-underline'
 import { toZhDay } from '@/lib/time'
 import Link from 'next/link'
+import { useQueryClient } from '@tanstack/react-query'
+import { fetchNoteBySlug } from '@/lib/api/note'
 
 export default function NoteListItem({
   noteTitle,
@@ -11,9 +13,21 @@ export default function NoteListItem({
   createdAt: Date
   slug: string
 }) {
+  const queryClient = useQueryClient()
+
+  const handleMouseEnter = () => {
+    // 预加载笔记详情
+    queryClient.prefetchQuery({
+      queryKey: ['note', slug],
+      queryFn: () => fetchNoteBySlug(slug),
+      staleTime: 1000 * 60 * 5,
+    })
+  }
+
   return (
     <Link
       href={`note/${slug}`}
+      onMouseEnter={handleMouseEnter}
       className="flex items-center justify-between gap-10 p-2 cursor-pointer
                 hover:text-purple-600
                 dark:hover:text-emerald-300 rounded-sm duration-500 group"
