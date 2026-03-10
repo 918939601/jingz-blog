@@ -1,0 +1,42 @@
+Name: blogapi
+Host: 0.0.0.0
+Port: 8080
+Timeout: 60000  # 60 seconds timeout for all requests
+Cors:
+  - http://localhost:3000
+DatabaseDSN: postgres://username@localhost:5432/blog?sslmode=disable
+Log:
+  Level: debug
+AmapKey: "your-amap-api-key"
+DefaultCity: "北京"  # Change this to your city for local development, e.g., "上海", "深圳", "杭州"
+
+# AI Configuration
+# Choose one of the following AI providers:
+
+# Option 1: OpenAI (requires proxy in China)
+# AiProvider: "openai"
+# AiApiKey: "your-openai-api-key"
+# AiModel: "gpt-4o-mini"
+# AiBaseUrl: "https://api.openai.com/v1"
+# AiProxyUrl: "http://127.0.0.1:7890"
+
+# Option 2: GLM (智谱) - Recommended for China
+AiProvider: "glm"
+AiApiKey: "your-glm-api-key"
+AiModel: "glm-4-flash"
+AiBaseUrl: "https://open.bigmodel.cn/api/paas/v4"
+AiProxyUrl: ""
+
+# Option 3: DeepSeek
+# AiProvider: "deepseek"
+# AiApiKey: "your-deepseek-api-key"
+# AiModel: "deepseek-chat"
+# AiBaseUrl: "https://api.deepseek.com/v1"
+# AiProxyUrl: ""
+
+# Option 4: Qwen (通义千问)
+# AiProvider: "qwen"
+# AiApiKey: "your-qwen-api-key"
+# AiModel: "qwen-plus"
+# AiBaseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+# AiProxyUrl: ""
