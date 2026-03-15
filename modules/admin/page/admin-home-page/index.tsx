@@ -30,7 +30,7 @@ export default function AdminHomePage() {
           </div>
           <h1 className="paper-title mt-5 text-4xl leading-tight md:text-5xl">
             <Greeting />
-            ，后台工作台
+            , Everyone!
           </h1>
           <div className="mt-4 space-y-3 text-sm leading-7 text-foreground/68 md:text-base">
             <p>
@@ -42,7 +42,7 @@ export default function AdminHomePage() {
               {' '}
               天。
             </p>
-            <p>这里负责文章、笔记、标签和引用的整理发布，前台的风格也同步延伸到了这里。</p>
+            <p>这里负责文章、笔记、标签和引用的整理发布。</p>
           </div>
         </div>
 
