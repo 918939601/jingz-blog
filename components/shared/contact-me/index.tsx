@@ -35,7 +35,7 @@ export default function ContactMe() {
           <Link
             className="rounded-full border border-white/85 bg-white/82 px-4 py-2 text-sm font-medium text-primary transition-transform hover:-translate-y-0.5 dark:border-white/12 dark:bg-white/[0.06] dark:text-white/85"
             href={link.url}
-            key={link.url}
+            key={link.name}
             target="_blank"
           >
             {link.name}

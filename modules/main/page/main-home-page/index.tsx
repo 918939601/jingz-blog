@@ -53,7 +53,7 @@ export default async function MainLayoutContainer() {
             <EchoCard allPublishedEcho={allPublishedEcho} />
             <MusicCard />
           </div>
-          <div className="paper-card h-full p-6 md:p-8">
+          <div className="paper-card flex h-full min-h-full self-stretch p-6 md:p-8">
             <TechStack />
           </div>
         </section>

@@ -73,7 +73,7 @@ function TechStack() {
   }
 
   return (
-    <section className="flex h-full flex-col gap-8">
+    <section className="flex h-full flex-1 flex-col justify-between gap-8">
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className="paper-label">stack lab</span>
