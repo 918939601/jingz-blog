@@ -5,6 +5,7 @@ import { fetchPublishedEchos } from '@/lib/api/echo'
 import BioSection from './internal/bio-section'
 import EchoCard from './internal/echo-card'
 import LiveClockCard from './internal/live-clock-card'
+import MusicCard from './internal/music-card'
 import TechStack from './internal/tech-stack'
 import YeAvatar from './internal/ye-avatar'
 
@@ -48,7 +49,10 @@ export default async function MainLayoutContainer() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
-          <EchoCard allPublishedEcho={allPublishedEcho} />
+          <div className="flex flex-col gap-6">
+            <EchoCard allPublishedEcho={allPublishedEcho} />
+            <MusicCard />
+          </div>
           <div className="paper-card p-6 md:p-8">
             <TechStack />
           </div>
