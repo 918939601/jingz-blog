@@ -1,17 +1,22 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import AskAiCard from './ask-ai-card'
 import { MessageCircle, X } from 'lucide-react'
-import clsx from 'clsx'
+import { useEffect, useRef, useState } from 'react'
+import AskAiCard from './ask-ai-card'
 
 interface AskAiFloatingProps {
   title?: string
   tags?: string[]
-  anchorSelector?: string // 目标内容区域，用于初始对齐右边界
+  anchorSelector?: string
 }
 
-const RIGHT_SIDEBAR_WIDTH = 16 // 右侧边栏宽度，可根据实际调整
+const VIEWPORT_GUTTER = 16
+const PANEL_DEFAULT = { w: 720, h: 440 }
+const PANEL_MIN = { w: 420, h: 320 }
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
 
 export default function AskAiFloating({
   title,
@@ -20,7 +25,7 @@ export default function AskAiFloating({
 }: AskAiFloatingProps) {
   const [open, setOpen] = useState(false)
   const [panelPos, setPanelPos] = useState({ x: 0, y: 0 })
-  const [panelSize, setPanelSize] = useState({ w: 720, h: 400 })
+  const [panelSize, setPanelSize] = useState(PANEL_DEFAULT)
   const panelDragging = useRef(false)
   const panelOffset = useRef({ x: 0, y: 0 })
   const resizing = useRef(false)
@@ -28,13 +33,31 @@ export default function AskAiFloating({
   const panelSizeRef = useRef(panelSize)
   const panelPosRef = useRef(panelPos)
 
-  // 同步 ref 和 state
   useEffect(() => {
     panelSizeRef.current = panelSize
     panelPosRef.current = panelPos
   }, [panelSize, panelPos])
 
+  const getDefaultFrame = () => {
+    const width = typeof window !== 'undefined' ? window.innerWidth : 0
+    const height = typeof window !== 'undefined' ? window.innerHeight : 0
+    const nextW = Math.min(PANEL_DEFAULT.w, Math.max(PANEL_MIN.w, width - VIEWPORT_GUTTER * 2))
+    const nextH = Math.min(PANEL_DEFAULT.h, Math.max(PANEL_MIN.h, height - 120))
+    const anchor = document.querySelector(anchorSelector)
+    const anchorRect = anchor?.getBoundingClientRect()
+    const preferredX = anchorRect
+      ? Math.max(VIEWPORT_GUTTER, anchorRect.right - nextW)
+      : VIEWPORT_GUTTER
+    const maxX = Math.max(VIEWPORT_GUTTER, width - nextW - VIEWPORT_GUTTER)
+    const maxY = Math.max(VIEWPORT_GUTTER, height - nextH - VIEWPORT_GUTTER)
 
+    return {
+      x: clamp(preferredX, VIEWPORT_GUTTER, maxX),
+      y: clamp(VIEWPORT_GUTTER + 72, VIEWPORT_GUTTER, maxY),
+      w: nextW,
+      h: nextH,
+    }
+  }
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
@@ -45,10 +68,12 @@ export default function AskAiFloating({
           const nextX = e.clientX - panelOffset.current.x
           const nextY = e.clientY - panelOffset.current.y
           const currentSize = panelSizeRef.current
-          const maxY = Math.max(12, height - currentSize.h - 12)
+          const maxX = Math.max(VIEWPORT_GUTTER, width - currentSize.w - VIEWPORT_GUTTER)
+          const maxY = Math.max(VIEWPORT_GUTTER, height - currentSize.h - VIEWPORT_GUTTER)
+
           return {
-            x: Math.min(Math.max(12, nextX), Math.max(12, width - currentSize.w - RIGHT_SIDEBAR_WIDTH)),
-            y: Math.min(Math.max(12, nextY), maxY),
+            x: clamp(nextX, VIEWPORT_GUTTER, maxX),
+            y: clamp(nextY, VIEWPORT_GUTTER, maxY),
           }
         })
       }
@@ -56,15 +81,13 @@ export default function AskAiFloating({
       if (resizing.current) {
         const width = typeof window !== 'undefined' ? window.innerWidth : 0
         const height = typeof window !== 'undefined' ? window.innerHeight : 0
-        const minW = 480
-        const minH = 320
         const currentPos = panelPosRef.current
-        const maxW = Math.max(minW, width - currentPos.x - RIGHT_SIDEBAR_WIDTH)
-        const maxH = Math.max(minH, height - currentPos.y - 24)
+        const maxW = Math.max(PANEL_MIN.w, width - currentPos.x - VIEWPORT_GUTTER)
+        const maxH = Math.max(PANEL_MIN.h, height - currentPos.y - VIEWPORT_GUTTER)
         const deltaX = e.clientX - resizeStart.current.x
         const deltaY = e.clientY - resizeStart.current.y
-        const nextW = Math.min(Math.max(minW, resizeStart.current.w + deltaX), maxW)
-        const nextH = Math.min(Math.max(minH, resizeStart.current.h + deltaY), maxH)
+        const nextW = clamp(resizeStart.current.w + deltaX, PANEL_MIN.w, maxW)
+        const nextH = clamp(resizeStart.current.h + deltaY, PANEL_MIN.h, maxH)
         setPanelSize({ w: nextW, h: nextH })
       }
     }
@@ -82,38 +105,35 @@ export default function AskAiFloating({
     }
   }, [])
 
-  useEffect(() => {
-    if (!open) return
-    const width = typeof window !== 'undefined' ? window.innerWidth : 0
-    const height = typeof window !== 'undefined' ? window.innerHeight : 0
-    const defaultW = Math.min(720, width - 32)
-    const defaultH = 400 // 初始高度
-
-    // 默认固定在左上角，留出边距
-    const gutter = 16
-    const x = gutter
-    const y = gutter + 80
-
-    setPanelPos({ x, y })
-    setPanelSize({ w: defaultW, h: defaultH })
-  }, [open])
-
   return (
     <>
       {!open && (
         <button
           type="button"
           aria-label="打开 AI 问答"
-          className="fixed bottom-120 left-6 z-10 flex h-14 w-14 items-center justify-center rounded-full border border-purple-300/70 bg-gradient-to-br from-white/90 to-purple-50/80 text-purple-700 shadow-lg backdrop-blur transition hover:-translate-y-0.5 hover:shadow-xl active:scale-95 dark:border-emerald-200/40 dark:from-slate-900/90 dark:to-slate-800/70 dark:text-emerald-200 animate-pulse"
-          onClick={() => setOpen(true)}
+          className="paper-card-strong fixed bottom-6 left-6 z-30 flex items-center gap-3 rounded-full px-4 py-3 text-primary transition-transform hover:-translate-y-1 dark:text-primary"
+          onClick={() => {
+            const nextFrame = getDefaultFrame()
+            setPanelPos({ x: nextFrame.x, y: nextFrame.y })
+            setPanelSize({ w: nextFrame.w, h: nextFrame.h })
+            setOpen(true)
+          }}
         >
-          <MessageCircle className="h-6 w-6" />
+          <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/85 bg-white/85 dark:border-white/12 dark:bg-white/[0.06]">
+            <MessageCircle className="h-5 w-5" />
+          </span>
+          <span className="hidden text-left sm:block">
+            <span className="block text-[11px] uppercase tracking-[0.24em] text-foreground/40">
+              AI
+            </span>
+            <span className="mt-1 block text-sm font-semibold text-foreground">问问 AI</span>
+          </span>
         </button>
       )}
 
       {open && (
         <div
-          className="fixed z-10 flex flex-col rounded-2xl border border-purple-200/80 bg-gradient-to-br from-white/95 to-purple-50/80 shadow-2xl backdrop-blur dark:border-emerald-200/40 dark:from-slate-900/95 dark:to-slate-800/80"
+          className="paper-card-strong fixed z-30 flex flex-col overflow-hidden"
           style={{
             left: panelPos.x,
             top: panelPos.y,
@@ -122,7 +142,7 @@ export default function AskAiFloating({
           }}
         >
           <div
-            className="flex shrink-0 cursor-move items-center justify-between p-4 pb-3"
+            className="flex shrink-0 cursor-move items-center justify-between border-b border-black/6 px-4 py-4 dark:border-white/10"
             onPointerDown={(e) => {
               panelDragging.current = true
               panelOffset.current = {
@@ -131,28 +151,30 @@ export default function AskAiFloating({
               }
             }}
           >
-            <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-emerald-200">
-              <span className="rounded-full border border-purple-300/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide dark:border-emerald-200/50">
+            <div className="flex items-center gap-2">
+              <span className="paper-label !px-2.5 !py-1 !tracking-[0.22em]">
                 AI
               </span>
-              <span>问问 AI</span>
+              <span className="text-sm font-semibold text-foreground">问问 AI</span>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-1 text-xs text-gray-500 transition hover:text-purple-600 dark:text-gray-400 dark:hover:text-emerald-200"
+              className="flex items-center gap-1 rounded-full border border-white/80 bg-white/80 px-3 py-2 text-xs text-foreground/52 transition hover:text-primary dark:border-white/12 dark:bg-white/[0.06]"
             >
               关闭
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4">
+
+          <div className="relative min-h-0 flex-1 overflow-hidden p-4">
             <AskAiCard title={title} tags={tags} showHeader={false} />
           </div>
+
           <button
             type="button"
             aria-label="resize"
-            className="absolute bottom-2 right-2 h-5 w-5 cursor-nwse-resize rounded-sm border border-purple-200/70 bg-white/70 text-purple-400 shadow-sm hover:bg-white dark:border-emerald-200/40 dark:bg-slate-800/80 dark:text-emerald-200"
+            className="absolute bottom-3 right-3 h-6 w-6 cursor-nwse-resize rounded-full border border-white/80 bg-white/82 text-primary shadow-sm hover:bg-white dark:border-white/12 dark:bg-white/[0.06]"
             onPointerDown={(e) => {
               e.stopPropagation()
               resizing.current = true

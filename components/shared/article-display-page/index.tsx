@@ -1,5 +1,5 @@
-import { customMarkdownTheme } from '@/lib/markdown'
 import * as motion from 'motion/react-client'
+import { customMarkdownTheme } from '@/lib/markdown'
 import ArticleDisplayHeader from './internal/article-display-header'
 
 export default function ArticleDisplayPage({
@@ -14,10 +14,9 @@ export default function ArticleDisplayPage({
   tags: string[]
 }) {
   return (
-    <div className="min-h-screen backdrop-blur-[1px] z-10">
+    <div className="z-10">
       <motion.article
-        className="flex flex-col gap-4 py-2 px-6 max-w-3xl flex-1 dark:bg-gray-900/30 bg-slate-300/30 rounded-sm
-                    border border-dashed border-indigo-200 dark:border-accent"
+        className="paper-card-strong mx-auto flex w-full max-w-4xl flex-col gap-6 px-5 py-6 md:px-8 md:py-8"
         initial={{
           opacity: 0,
           y: 40,
@@ -33,9 +32,8 @@ export default function ArticleDisplayPage({
         }}
       >
         <ArticleDisplayHeader title={title} createdAt={createdAt} tags={tags} />
-        {/* 渲染的主要内容 */}
         <main
-          className={customMarkdownTheme}
+          className={`${customMarkdownTheme} min-w-0`}
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </motion.article>

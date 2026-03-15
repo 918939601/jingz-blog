@@ -1,10 +1,7 @@
 'use client'
 
-import type { NoteDTO } from '@/lib/api/note'
 import type { ColumnDef } from '@tanstack/react-table'
-import TagItemBadge from '@/components/shared/tag-item-badge'
-import { Button } from '@/components/ui/button'
-import { prettyDateTime } from '@/lib/time'
+import type { NoteDTO } from '@/lib/api/note'
 import {
   ArrowDown,
   ArrowUp,
@@ -14,6 +11,9 @@ import {
   TypeIcon,
   Wrench,
 } from 'lucide-react'
+import TagItemBadge from '@/components/shared/tag-item-badge'
+import { Button } from '@/components/ui/button'
+import { prettyDateTime } from '@/lib/time'
 import ActionButtons from './action-buttons'
 import PublishToggleSwitch from './publish-toggle-switch'
 
@@ -22,18 +22,23 @@ export const columns: ColumnDef<NoteDTO>[] = [
     accessorKey: 'title',
     header: () => {
       return (
-        <span className="flex gap-1 items-center">
+        <span className="flex items-center gap-1">
           <TypeIcon className="size-4" />
           标题
         </span>
       )
     },
+    cell: ({ row }) => (
+      <div className="max-w-[260px]">
+        <p className="line-clamp-2 font-medium text-foreground">{row.original.title}</p>
+      </div>
+    ),
   },
   {
     accessorKey: 'tags',
     header: () => {
       return (
-        <span className="flex gap-1 items-center">
+        <span className="flex items-center gap-1">
           <TagIcon className="size-4" />
           标签
         </span>
@@ -42,7 +47,7 @@ export const columns: ColumnDef<NoteDTO>[] = [
     cell: ({ row }) => {
       const tags = row.original.tags ?? []
       return (
-        <div className="flex gap-1 items-center">
+        <div className="flex max-w-[260px] flex-wrap items-center gap-1.5">
           {tags.map(tag => (
             <TagItemBadge tag={tag.tagName} key={tag.id} />
           ))}
@@ -54,7 +59,7 @@ export const columns: ColumnDef<NoteDTO>[] = [
     accessorKey: 'isPublished',
     header: () => {
       return (
-        <span className="flex gap-1 items-center">
+        <span className="flex items-center gap-1">
           <Eye className="size-4" />
           是否发布
         </span>
@@ -81,7 +86,7 @@ export const columns: ColumnDef<NoteDTO>[] = [
         <Button
           variant="ghost"
           size="sm"
-          className="cursor-pointer"
+          className="table-sort-button cursor-pointer"
           onClick={() => {
             column.toggleSorting(column.getIsSorted() === 'asc')
           }}
@@ -101,15 +106,15 @@ export const columns: ColumnDef<NoteDTO>[] = [
       )
     },
     cell: ({ row }) => {
-      const prettyTime = prettyDateTime(row.original.createdAt)
-      return <span>{prettyTime}</span>
+      const prettyTime = prettyDateTime(new Date(row.original.createdAt))
+      return <time className="font-mono text-sm text-foreground/64">{prettyTime}</time>
     },
   },
   {
     accessorKey: 'actions',
     header: () => {
       return (
-        <span className="flex gap-1 items-center">
+        <span className="flex items-center gap-1">
           <Wrench className="size-4" />
           操作
         </span>

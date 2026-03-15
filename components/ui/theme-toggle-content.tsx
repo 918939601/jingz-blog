@@ -15,7 +15,8 @@ export default function ThemeToggleContent() {
     <Button
       onClick={handleClick}
       size="sm"
-      className='cursor-pointer'
+      variant="outline"
+      className="glass-icon-button size-9 cursor-pointer rounded-full p-0"
     >
       {theme === 'light' ? <Sun /> : <Moon />}
     </Button>

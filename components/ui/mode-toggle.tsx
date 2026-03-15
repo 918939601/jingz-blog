@@ -11,8 +11,9 @@ const ThemeToggleContent = dynamic(
     ssr: false,
     loading: () => (
       <Button
+        variant="outline"
         size="sm"
-        className='cursor-pointer'
+        className="glass-icon-button size-9 cursor-pointer rounded-full p-0"
       >
         <Sun />
       </Button>

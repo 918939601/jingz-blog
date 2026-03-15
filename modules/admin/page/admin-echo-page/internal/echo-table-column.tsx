@@ -1,6 +1,19 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
+import {
+  ArrowDown,
+  ArrowUp,
+  CalendarDays,
+  Eye,
+  Quote,
+  TypeIcon,
+  Wrench,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { prettyDateTime } from '@/lib/time'
+import ActionButtons from './action-buttons'
+import PublishToggleSwitch from './publish-toggle-switch'
 
 interface Echo {
   id: number
@@ -9,35 +22,29 @@ interface Echo {
   isPublished: boolean
   createdAt: Date
 }
-import { Button } from '@/components/ui/button'
-import { prettyDateTime } from '@/lib/time'
-import {
-  CalendarDays,
-  Eye,
-  Quote,
-  TypeIcon,
-  Wrench,
-} from 'lucide-react'
-import ActionButtons from './action-buttons'
-import PublishToggleSwitch from './publish-toggle-switch'
 
 export const columns: ColumnDef<Echo>[] = [
   {
     accessorKey: 'content',
     header: () => {
       return (
-        <span className="flex gap-1 items-center dark:text-gray-200 text-gray-500">
+        <span className="flex items-center gap-1">
           <TypeIcon className="size-4" />
           内容
         </span>
       )
     },
+    cell: ({ row }) => (
+      <div className="max-w-[320px]">
+        <p className="line-clamp-2 text-sm leading-6 text-foreground/76">{row.original.content}</p>
+      </div>
+    ),
   },
   {
     accessorKey: 'reference',
     header: () => {
       return (
-        <span className="flex gap-1 items-center dark:text-gray-200 text-gray-500">
+        <span className="flex items-center gap-1">
           <Quote className="size-4" />
           来源
         </span>
@@ -45,14 +52,14 @@ export const columns: ColumnDef<Echo>[] = [
     },
     cell: ({ row }) => {
       const reference = row.original.reference.toString()
-      return <span>{reference}</span>
+      return <span className="text-sm text-foreground/64">{reference}</span>
     },
   },
   {
     accessorKey: 'isPublished',
     header: () => {
       return (
-        <span className="flex gap-1 items-center dark:text-gray-200 text-gray-500">
+        <span className="flex items-center gap-1">
           <Eye className="size-4" />
           是否发布
         </span>
@@ -65,30 +72,40 @@ export const columns: ColumnDef<Echo>[] = [
   {
     accessorKey: 'createdAt',
     header: ({ column }) => {
+      const sorted = column.getIsSorted()
       return (
         <Button
           variant="ghost"
           size="sm"
-          className="cursor-pointer"
+          className="table-sort-button cursor-pointer"
           onClick={() => {
             column.toggleSorting(column.getIsSorted() === 'asc')
           }}
         >
           <CalendarDays className="size-4" />
           创建时间
+          {sorted === 'asc'
+            ? (
+                <ArrowUp />
+              )
+            : sorted === 'desc'
+              ? (
+                  <ArrowDown />
+                )
+              : null}
         </Button>
       )
     },
     cell: ({ row }) => {
       const prettyTime = prettyDateTime(row.original.createdAt)
-      return <time>{prettyTime}</time>
+      return <time className="font-mono text-sm text-foreground/64">{prettyTime}</time>
     },
   },
   {
     accessorKey: 'actions',
     header: () => {
       return (
-        <span className="flex gap-1 items-center dark:text-gray-200 text-gray-500">
+        <span className="flex items-center gap-1">
           <Wrench className="size-4" />
           操作
         </span>

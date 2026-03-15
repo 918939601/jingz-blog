@@ -1,10 +1,9 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { ModeToggle } from '@/components/ui/mode-toggle'
-import { getActiveAdminPath } from '@/lib/url'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { ModeToggle } from '@/components/ui/mode-toggle'
+import { getActiveAdminPath } from '@/lib/url'
 import AdminLogo from './internal/admin-logo'
 import AvatarDropdownMenu from './internal/avatar-dropdown-menu'
 
@@ -36,30 +35,34 @@ function AdminNavbar() {
   const activeUrl = getActiveAdminPath(pathname)
 
   return (
-    <header
-      className="sticky h-14 top-0 backdrop-blur-lg z-50 border-b border-dashed
-                  flex justify-between items-center px-6"
-    >
-      <nav className="flex gap-4">
-        {/* 左侧logo区域, 回到首页 */}
-        <AdminLogo />
-        {/* 路由 */}
-        {AdminRoutes.map(link => (
-          <Link href={link.path} key={link.path}>
-            <Button
-              className="rounded-lg text-base cursor-pointer"
-              variant={activeUrl === link.path ? 'default' : 'ghost'}
-              size="sm"
-            >
-              {link.pathName}
-            </Button>
-          </Link>
-        ))}
-      </nav>
-      <section className="flex gap-4 items-center">
-        <ModeToggle />
-        <AvatarDropdownMenu />
-      </section>
+    <header className="sticky top-0 z-40 px-4 pt-4 md:px-6">
+      <div className="paper-card-strong mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 rounded-[28px] px-3 py-3 md:px-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <AdminLogo />
+          <nav className="flex flex-wrap rounded-full bg-black/[0.035] p-1 dark:bg-white/[0.04]">
+            {AdminRoutes.map(link => (
+              <Link
+                href={link.path}
+                key={link.path}
+                className={`rounded-full px-3 py-2 text-sm transition-colors md:px-4 ${
+                  activeUrl === link.path
+                    ? 'bg-white/92 font-semibold text-primary shadow-[0_10px_25px_-18px_rgba(41,66,69,0.8)] dark:bg-[#173135]'
+                    : 'text-foreground/58 hover:text-foreground dark:text-white/58 dark:hover:text-white/88'
+                }`}
+              >
+                {link.pathName}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <section className="flex items-center gap-3">
+          <div className="rounded-full border border-white/80 bg-white/82 dark:border-white/12 dark:bg-white/[0.06]">
+            <ModeToggle />
+          </div>
+          <AvatarDropdownMenu />
+        </section>
+      </div>
     </header>
   )
 }

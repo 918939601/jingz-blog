@@ -9,40 +9,42 @@ interface AskAiCardProps {
   showHeader?: boolean
 }
 
-export default function AskAiCard({ title, tags = [], showHeader = true }: AskAiCardProps) {
+const EMPTY_TAGS: string[] = []
+
+export default function AskAiCard({ title, tags, showHeader = true }: AskAiCardProps) {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isComposing, setIsComposing] = useState(false)
+  const contextTags = tags ?? EMPTY_TAGS
 
   const handleAsk = async () => {
     const q = question.trim()
-    if (!q) return
+    if (!q) {
+      return
+    }
 
-    console.log('[AI Frontend] Starting request, question:', q)
     setIsLoading(true)
     setError(null)
     setAnswer('')
 
     try {
-      console.log('[AI Frontend] Calling askAi stream API...')
       await askAiStream(
         {
           question: q,
           context: {
             title,
-            tags,
+            tags: contextTags,
           },
         },
-        chunk => {
+        (chunk) => {
           setAnswer(prev => prev + chunk)
         },
       )
-      console.log('[AI Frontend] Stream completed')
     }
     catch (err) {
-      console.error('[AI Frontend] Error:', err)
+      console.error('Ask AI failed:', err)
       setError((err as Error).message || '请求失败')
     }
     finally {
@@ -52,46 +54,44 @@ export default function AskAiCard({ title, tags = [], showHeader = true }: AskAi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    handleAsk()
+    void handleAsk()
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Don't submit if user is composing (e.g., using Chinese input method)
     if (e.key === 'Enter' && !e.shiftKey && !isComposing) {
       e.preventDefault()
-      handleAsk()
+      void handleAsk()
     }
   }
 
   return (
-    <section className="rounded-2xl border border-purple-200/70 bg-white/60 p-4 shadow-sm backdrop-blur dark:border-emerald-300/30 dark:bg-slate-900/40">
+    <section className="flex h-full flex-col rounded-[28px] border border-black/6 bg-black/[0.03] p-4 dark:border-white/10 dark:bg-white/[0.03]">
       {showHeader && (
-        <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-emerald-200">
-          <span className="rounded-full border border-purple-300/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide dark:border-emerald-200/50">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="paper-label !px-2.5 !py-1 !tracking-[0.22em]">
             AI
           </span>
-          <span>问问 AI</span>
-          <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
-            看不懂的概念，直接问
-          </span>
+          <span className="text-sm font-semibold text-foreground">问问 AI</span>
+          <span className="text-xs text-foreground/48">看不懂的概念，直接问</span>
         </div>
       )}
-      <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3">
+
+      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3">
         <textarea
           value={question}
           onChange={e => setQuestion(e.target.value)}
           onKeyDown={handleKeyDown}
           onCompositionStart={() => setIsComposing(true)}
           onCompositionEnd={() => setIsComposing(false)}
-          placeholder="例如：大模型是什么？深度学习和机器学习有什么区别？（Enter 提交，Shift+Enter 换行）"
-          rows={3}
-          className="w-full rounded-xl border border-purple-200/70 bg-white/80 px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:border-emerald-200/40 dark:bg-slate-950/60 dark:text-gray-100 dark:focus:border-emerald-300 dark:focus:ring-emerald-200/30"
+          placeholder="例如：这篇文章里提到的概念是什么意思？Enter 提交，Shift + Enter 换行。"
+          rows={4}
+          className="min-h-28 w-full rounded-[22px] border border-white/80 bg-white/82 px-4 py-3 text-sm leading-7 text-foreground outline-none transition focus:border-[#57b8ab] focus:ring-2 focus:ring-[#57b8ab]/20 dark:border-white/12 dark:bg-white/[0.06] dark:focus:border-[#57b8ab] dark:focus:ring-[#57b8ab]/20"
         />
         <div className="flex items-center gap-2">
           <button
             type="submit"
-            disabled={isLoading}
-            className="rounded-lg border border-purple-300/80 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:-translate-y-0.5 hover:border-purple-500 hover:text-purple-800 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-70 dark:border-emerald-200/40 dark:text-emerald-200 dark:hover:border-emerald-200"
+            disabled={isLoading || !question.trim()}
+            className="rounded-full border border-white/85 bg-white/82 px-4 py-2 text-sm font-semibold text-primary transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/12 dark:bg-white/[0.06] dark:text-primary"
           >
             {isLoading ? '思考中…' : '提问'}
           </button>
@@ -102,18 +102,45 @@ export default function AskAiCard({ title, tags = [], showHeader = true }: AskAi
               setAnswer('')
               setError(null)
             }}
-            className="text-xs text-gray-500 transition hover:text-purple-600 dark:text-gray-400 dark:hover:text-emerald-200"
+            className="text-xs text-foreground/48 transition hover:text-primary"
           >
             清空
           </button>
         </div>
       </form>
-      {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
-      {answer && (
-        <div className="mt-3 rounded-xl border border-purple-100/80 bg-white/80 p-3 text-sm leading-relaxed text-gray-800 shadow-inner dark:border-emerald-200/30 dark:bg-slate-950/60 dark:text-gray-100">
-          {answer}
+
+      {!!contextTags.length && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {contextTags.map(tag => (
+            <span
+              key={tag}
+              className="rounded-full border border-black/6 bg-black/[0.03] px-3 py-1 text-xs text-foreground/56 dark:border-white/10 dark:bg-white/[0.03]"
+            >
+              {`#${tag}`}
+            </span>
+          ))}
         </div>
       )}
+
+      {error && <p className="mt-3 text-xs text-red-500 dark:text-red-300">{error}</p>}
+
+      <div className="mt-4 min-h-0 flex-1">
+        {answer
+          ? (
+              <div className="h-full rounded-[22px] border border-white/80 bg-white/84 p-4 text-sm leading-7 text-foreground shadow-inner dark:border-white/12 dark:bg-white/[0.06]">
+                <div className="h-full overflow-y-auto whitespace-pre-wrap">
+                  {answer}
+                </div>
+              </div>
+            )
+          : (
+              <div className="flex h-full min-h-32 items-center justify-center rounded-[22px] border border-dashed border-black/8 px-4 text-center text-sm leading-7 text-foreground/42 dark:border-white/10">
+                {title
+                  ? `可以围绕《${title}》提问，也可以直接问一个技术概念。`
+                  : '输入一个问题开始。'}
+              </div>
+            )}
+      </div>
     </section>
   )
 }

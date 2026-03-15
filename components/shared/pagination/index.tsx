@@ -1,4 +1,10 @@
 import type { Table } from '@tanstack/react-table'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -7,12 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react'
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -22,8 +22,8 @@ export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-end my-2">
-      <div className="flex items-center space-x-2 lg:space-x-3">
+    <div className="mt-4 flex items-center justify-end">
+      <div className="paper-card flex items-center gap-2 rounded-full px-3 py-2 lg:gap-3">
         <div className="flex items-center space-x-2">
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -31,7 +31,7 @@ export function DataTablePagination<TData>({
               table.setPageSize(Number(value))
             }}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger className="h-8 w-[76px] rounded-full border-white/80 bg-white/82 dark:border-white/12 dark:bg-white/[0.06]">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
@@ -43,7 +43,7 @@ export function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        <div className="flex w-[100px] items-center justify-center text-sm font-medium text-foreground/64">
           {table.getState().pagination.pageIndex + 1}
           {' '}
           /
@@ -52,7 +52,7 @@ export function DataTablePagination<TData>({
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex cursor-pointer"
+            className="hidden h-8 w-8 cursor-pointer rounded-full border-white/80 bg-white/82 p-0 dark:border-white/12 dark:bg-white/[0.06] lg:flex"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
@@ -61,7 +61,7 @@ export function DataTablePagination<TData>({
           </Button>
           <Button
             variant="outline"
-            className="h-8 w-8 p-0 cursor-pointer"
+            className="h-8 w-8 cursor-pointer rounded-full border-white/80 bg-white/82 p-0 dark:border-white/12 dark:bg-white/[0.06]"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -70,7 +70,7 @@ export function DataTablePagination<TData>({
           </Button>
           <Button
             variant="outline"
-            className="h-8 w-8 p-0 cursor-pointer"
+            className="h-8 w-8 cursor-pointer rounded-full border-white/80 bg-white/82 p-0 dark:border-white/12 dark:bg-white/[0.06]"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
@@ -79,7 +79,7 @@ export function DataTablePagination<TData>({
           </Button>
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex cursor-pointer"
+            className="hidden h-8 w-8 cursor-pointer rounded-full border-white/80 bg-white/82 p-0 dark:border-white/12 dark:bg-white/[0.06] lg:flex"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >

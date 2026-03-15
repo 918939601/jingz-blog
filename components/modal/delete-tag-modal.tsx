@@ -1,4 +1,6 @@
-import { deleteTag } from '@/lib/api/tag'
+import type { TagType } from '@prisma/client'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -7,10 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { deleteTag } from '@/lib/api/tag'
 import { useModalStore } from '@/store/use-modal-store'
-import { TagType } from '@prisma/client'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
 
 interface DeleteTagDTO {
   id: number
@@ -28,7 +28,7 @@ export default function DeleteTagModal() {
   const queryClient = useQueryClient()
   const { mutate, isPending } = useMutation({
     mutationFn: (id: number) => deleteTag(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] })
       toast.success(`删除标签成功`)
     },
@@ -53,24 +53,30 @@ export default function DeleteTagModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onModalClose}>
-      <DialogContent className="flex flex-col items-center gap-4">
-        <DialogHeader className="flex flex-col items-center">
-          <DialogTitle>确定要删除该标签吗🥹</DialogTitle>
-          <DialogDescription>
-            不会删除关联的所有文章哦, 只是断开标签和文章的连接
+      <DialogContent className="paper-card-strong gap-0 rounded-[28px] border-white/80 bg-[#f8f5f0]/95 p-6 text-center shadow-[0_28px_90px_-48px_rgba(41,66,69,0.52)] dark:border-white/12 dark:bg-[#10191b]/95 sm:max-w-[460px]">
+        <DialogHeader className="space-y-3">
+          <span className="paper-label mx-auto">delete tag</span>
+          <DialogTitle className="paper-title text-3xl">删除标签</DialogTitle>
+          <DialogDescription className="text-sm leading-7 text-foreground/60">
+            删除后只会断开与文章的关联，不会删除文章内容本身。
           </DialogDescription>
         </DialogHeader>
-        <div className="flex gap-4">
+        <div className="paper-card mt-6 rounded-[22px] px-4 py-4 text-left">
+          <p className="text-xs uppercase tracking-[0.22em] text-foreground/42">Tag</p>
+          <p className="paper-title mt-3 text-2xl">{values?.tagName ?? '未命名标签'}</p>
+          <p className="mt-2 text-sm text-foreground/56">{values?.tagType ?? 'UNKNOWN'}</p>
+        </div>
+        <div className="mt-6 flex justify-center gap-3">
           <Button
             onClick={onSubmit}
             variant="destructive"
-            className="cursor-pointer"
+            className="cursor-pointer rounded-full px-6"
             disabled={isPending}
             type="submit"
           >
-            确定
+            {isPending ? '删除中...' : '确认删除'}
           </Button>
-          <Button variant="outline" onClick={onModalClose}>
+          <Button variant="outline" onClick={onModalClose} className="rounded-full px-6">
             取消
           </Button>
         </div>

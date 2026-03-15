@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
-import { fetchBlogHtmlBySlug } from '@/lib/api/blog'
 import ArticleDisplayPage from '@/components/shared/article-display-page'
+import AskAiFloating from '@/components/shared/ask-ai-floating'
 import CommentCard from '@/components/shared/comment-card'
 import HorizontalDividingLine from '@/components/shared/horizontal-dividing-line'
 import ScrollIndicator from '@/components/shared/scroll-indicator'
-import AskAiFloating from '@/components/shared/ask-ai-floating'
+import { fetchBlogHtmlBySlug } from '@/lib/api/blog'
 import { processor } from '@/lib/markdown'
 
 export const dynamicParams = true
@@ -46,17 +46,22 @@ export default async function Page({
   const { content, title, createdAt, tags, id } = article
   const htmlContent = String(await processor.process(content || ''))
   const tagNames = (tags || []).map(v => v.tagName)
+  const articleDate = new Date(createdAt)
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <ArticleDisplayPage
         title={title}
-        createdAt={createdAt}
+        createdAt={articleDate}
         content={htmlContent}
         tags={tagNames}
       />
-      <HorizontalDividingLine fill="#EC7FA9" />
-      <CommentCard term={`${title}-blog-${id}`} />
+      <section className="paper-card px-5 py-6 md:px-8 md:py-7">
+        <HorizontalDividingLine fill="#57b8ab" />
+        <div className="mt-6">
+          <CommentCard term={`${title}-blog-${id}`} />
+        </div>
+      </section>
       <ScrollIndicator />
       <AskAiFloating title={title} tags={tagNames} />
     </div>

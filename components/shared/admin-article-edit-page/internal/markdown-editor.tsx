@@ -47,10 +47,10 @@ export default function MarkdownEditor({
   onChange,
 }: {
   value: string
-  onChange: () => void
+  onChange: (value: string) => void
 }) {
   return (
-    <div id="content-editor">
+    <div id="content-editor" className="admin-editor-shell">
       <Editor
         value={value}
         onChange={onChange}

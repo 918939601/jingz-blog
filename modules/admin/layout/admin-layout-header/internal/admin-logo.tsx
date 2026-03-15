@@ -15,11 +15,14 @@ function AdminLogo() {
       <Tooltip>
         <TooltipTrigger asChild>
           <Link
-            className="flex items-center gap-1 hover:underline"
+            className="flex items-center gap-3 rounded-full px-3 py-2"
             href="/"
           >
-            <h2 className="font-bold">叶鱼后台管理</h2>
-            <Code size={18} />
+            <span className="paper-label !px-2.5 !py-1 !tracking-[0.22em]">CMS</span>
+            <div className="hidden sm:block">
+              <h2 className="paper-title text-base">叶鱼后台管理</h2>
+            </div>
+            <Code size={18} className="text-foreground/45" />
           </Link>
         </TooltipTrigger>
         <TooltipContent>点击返回前台</TooltipContent>

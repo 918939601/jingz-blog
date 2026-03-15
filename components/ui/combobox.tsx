@@ -3,14 +3,7 @@
 'use client'
 
 import * as React from 'react'
-
 import { Check, ChevronDown, X } from 'lucide-react'
-
-// 源代码来自：https://github.com/shadcn-ui/ui/issues/927#issuecomment-1788084995
-// 根据自己需要做了部分修改
-import { cn } from '@/lib/utils'
-
-import { Badge } from './badge'
 import { Button } from './button'
 import {
   Command,
@@ -21,7 +14,10 @@ import {
 } from './command'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
 import { ScrollArea } from './scroll-area'
+import { cn } from '@/lib/utils'
 import TagItemBadge from '../shared/tag-item-badge'
+// 源代码来自：https://github.com/shadcn-ui/ui/issues/927#issuecomment-1788084995
+// 根据自己需要做了部分修改
 
 export interface ComboboxOption {
   value: string
@@ -99,11 +95,11 @@ export const Combobox = React.forwardRef(
             role="combobox"
             variant="outline"
             aria-expanded={open}
-            className="inline-flex size-full justify-between whitespace-normal hover:bg-secondary/20 active:scale-100"
+            className="glass-field inline-flex h-auto min-h-12 w-full justify-between whitespace-normal px-4 py-3 text-left hover:bg-white dark:hover:bg-white/[0.08]"
           >
             <div
               className={cn(
-                'w-full text-left font-normal text-muted-foreground flex flex-row flex-wrap gap-x-2 gap-y-1',
+                'flex w-full flex-row flex-wrap gap-x-2 gap-y-1 text-left font-normal text-muted-foreground',
                 {
                   'line-clamp-1': !props.multiple,
                 },
@@ -130,10 +126,10 @@ export const Combobox = React.forwardRef(
             </div>
             <div className="flex h-full shrink-0 items-center">
               {/* 多选时，显示清除全部按钮 */}
-              {props.multiple && (
+              {props.multiple && Boolean(props.value?.length) && (
                 <X
                   className={cn(
-                    'ml-2 h-4 w-4 opacity-50 hover:opacity-80 transition-opacity',
+                    'ml-2 h-4 w-4 rounded-full text-foreground/45 opacity-70 transition hover:text-primary hover:opacity-100',
                   )}
                   onClick={e => {
                     props.onValueChange?.([])
@@ -145,15 +141,18 @@ export const Combobox = React.forwardRef(
               )}
               <ChevronDown
                 className={cn(
-                  'ml-2 h-4 w-4 shrink-0 rotate-0 opacity-50 transition-transform',
+                  'ml-2 h-4 w-4 shrink-0 rotate-0 text-foreground/45 transition-transform',
                   open && 'rotate-180',
                 )}
               />
             </div>
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="p-0">
-          <Command shouldFilter={false}>
+        <PopoverContent
+          align="start"
+          className="w-[var(--radix-popover-trigger-width)] min-w-[300px] p-2"
+        >
+          <Command shouldFilter={false} className="gap-2">
             <CommandInput
               ref={ref}
               value={search}
@@ -162,8 +161,8 @@ export const Combobox = React.forwardRef(
               }}
               placeholder={props.searchPlaceholder ?? '请输入要搜索的内容'}
             />
-            <CommandEmpty>{props.emptyText ?? 'No results found'}</CommandEmpty>
-            <CommandGroup>
+            <CommandEmpty>{props.emptyText ?? '没有找到匹配项'}</CommandEmpty>
+            <CommandGroup className="pt-2">
               <ScrollArea>
                 <div className="max-h-60">
                   {filteredOptions.map(option => (

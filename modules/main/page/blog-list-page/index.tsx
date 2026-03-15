@@ -1,9 +1,9 @@
 'use client'
 
-import * as motion from 'motion/react-client'
 import type { Variants } from 'motion/react'
-import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import * as motion from 'motion/react-client'
+import { useMemo, useState } from 'react'
 import Loading from '@/components/shared/loading'
 import { fetchBlogs } from '@/lib/api/blog'
 import BlogListItem from './internal/blog-list-item'
@@ -37,12 +37,18 @@ export default function BlogListPage() {
     staleTime: 1000 * 60 * 5,
   })
 
-  const allBlogs = response?.items?.filter(b => b.isPublished) || []
+  const allBlogs = useMemo(
+    () => response?.items?.filter(b => b.isPublished) || [],
+    [response],
+  )
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return allBlogs
+    if (!q) {
+      return allBlogs
+    }
+
     return allBlogs.filter((b) => {
       const titleHit = b.title.toLowerCase().includes(q)
       const contentHit = (b.content || '').toLowerCase().includes(q)
@@ -59,41 +65,64 @@ export default function BlogListPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4">
-      <section className="rounded-2xl border border-purple-200/70 bg-white/50 p-4 shadow-sm backdrop-blur dark:border-emerald-300/30 dark:bg-slate-900/40">
-        <div className="flex items-center gap-2 text-sm font-medium text-purple-700 dark:text-emerald-200">
-          <span className="rounded-full border border-purple-300/80 px-2 py-0.5 text-xs font-semibold tracking-wide dark:border-emerald-200/50">
-            搜索
-          </span>
-          <span>博客搜索</span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">输入关键词快速定位文章</span>
+    <div className="flex flex-col gap-6">
+      <section className="paper-card-strong grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_320px] md:p-8">
+        <div>
+          <div className="flex flex-wrap gap-2">
+            <span className="paper-label">blog archive</span>
+            <span className="paper-label !tracking-[0.18em]">long-form writing</span>
+          </div>
+          <h1 className="paper-title mt-5 text-4xl leading-tight md:text-5xl">博客</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-foreground/68 md:text-base">
+            这里放的是更完整的文章，偏向可以反复回看的技术内容、经验总结和阶段性思考。
+          </p>
         </div>
-        <div className="mt-3 flex items-center gap-3">
-          <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="例如：性能优化、Kafka、React 表单、索引调优..."
-            className="w-full rounded-xl border border-purple-200/70 bg-white/70 px-4 py-3 text-sm text-gray-800 shadow-inner outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:border-emerald-200/40 dark:bg-slate-950/60 dark:text-gray-100 dark:focus:border-emerald-300 dark:focus:ring-emerald-200/30"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery('')}
-              className="shrink-0 rounded-lg px-3 py-2 text-xs text-gray-500 transition hover:text-purple-600 dark:text-gray-400 dark:hover:text-emerald-200"
-            >
-              清空
-            </button>
-          )}
+
+        <div className="rounded-[28px] border border-black/6 bg-black/[0.03] p-4 dark:border-white/10 dark:bg-white/[0.03]">
+          <p className="text-xs uppercase tracking-[0.24em] text-foreground/42">Search</p>
+          <div className="mt-3 flex items-center gap-3">
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="输入标题"
+              className="w-full rounded-2xl border border-white/80 bg-white/80 px-4 py-3 text-sm text-foreground outline-none transition focus:border-[#57b8ab] focus:ring-2 focus:ring-[#57b8ab]/20 dark:border-white/12 dark:bg-white/[0.06] dark:focus:border-[#57b8ab] dark:focus:ring-[#57b8ab]/20"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                className="shrink-0 rounded-full border border-white/80 bg-white/82 px-4 py-2 text-xs text-foreground/56 transition hover:text-primary dark:border-white/12 dark:bg-white/[0.06]"
+              >
+                清空
+              </button>
+            )}
+          </div>
+          <p className="mt-3 text-sm text-foreground/56">
+            {query
+              ? `共 ${filtered.length} 篇匹配 “${query}”`
+              : `共 ${allBlogs.length} 篇已发布的博客`}
+          </p>
+          <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/36">Press / to focus</p>
         </div>
-        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          {query
-            ? `共 ${filtered.length} 篇匹配 “${query}”`
-            : `共 ${allBlogs.length} 篇已发布的博客`}
-        </p>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        <div className="paper-card p-5">
+          <p className="text-xs uppercase tracking-[0.24em] text-foreground/42">Count</p>
+          <p className="paper-title mt-3 text-3xl">{allBlogs.length}</p>
+        </div>
+        <div className="paper-card p-5">
+          <p className="text-xs uppercase tracking-[0.24em] text-foreground/42">Focus</p>
+          <p className="mt-3 text-sm leading-7 text-foreground/64">前端、Go、工程实践与长期沉淀。</p>
+        </div>
+        <div className="paper-card p-5">
+          <p className="text-xs uppercase tracking-[0.24em] text-foreground/42">Signal</p>
+          <p className="mt-3 text-sm leading-7 text-foreground/64">优先保留那些以后还会重新查的内容。</p>
+        </div>
       </section>
 
       <motion.main
-        className="flex flex-col"
+        className="flex flex-col gap-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -110,9 +139,9 @@ export default function BlogListPage() {
           </motion.div>
         ))}
         {filtered.length === 0 && (
-          <p className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="paper-card p-8 text-center text-sm text-foreground/56">
             没有匹配到相关博客，换个关键词试试。
-          </p>
+          </div>
         )}
       </motion.main>
     </div>

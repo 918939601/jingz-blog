@@ -9,12 +9,10 @@ export default function TagContainerSkeleton() {
         <Skeleton
           className={cn(
             toggleVariants({ variant: 'outline', size: 'sm' }),
-            'mr-4',
+            'mr-3 w-24 px-0',
           )}
           key={`${i.toString()}`}
-        >
-          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-        </Skeleton>
+        />
       ))}
     </>
   )

@@ -11,25 +11,26 @@ export default function ArticleDisplayHeader({
   tags: string[]
 }) {
   return (
-    <header className="flex flex-col justify-center items-center gap-1">
-      <h1 className="text-3xl md:text-4xl font-extrabold text-purple-600 dark:text-emerald-300">
+    <header className="flex flex-col gap-5 border-b border-black/8 pb-6 dark:border-white/10">
+      <div className="flex flex-wrap gap-2">
+        <span className="paper-label">essay</span>
+        <time className="paper-label !tracking-[0.18em]">{toZhDay(createdAt)}</time>
+      </div>
+
+      <h1 className="paper-title text-4xl leading-tight md:text-5xl">
         {title}
       </h1>
 
-      <section className="flex justify-center w-full gap-2 text-xs md:text-sm">
-
-        <p className="flex gap-2 justify-center">
+      <section className="flex flex-wrap gap-2 text-xs md:text-sm">
+        <div className="flex flex-wrap gap-2">
           {tags.map(tag => (
             <TagItemBadge
               key={`${tag.toString()}`}
               tag={tag}
             />
           ))}
-        </p>
-
-        <time className="border-b border-dashed border-b-foreground">{toZhDay(createdAt)}</time>
+        </div>
       </section>
-
     </header>
   )
 }

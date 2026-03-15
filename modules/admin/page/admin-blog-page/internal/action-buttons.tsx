@@ -15,13 +15,14 @@ export default function ActionButtons({
   title: string
 }) {
   const { setModalOpen } = useModalStore()
+  const iconButtonClass = 'glass-icon-button size-9'
 
   return (
-    <section className="flex items-center gap-1">
+    <section className="flex items-center gap-2">
       <Link
         href={`/blog/${slug}`}
         className={cn(
-          buttonVariants({ variant: 'outline', className: 'size-8' }),
+          buttonVariants({ variant: 'outline', className: iconButtonClass }),
         )}
       >
         <Eye className="size-4" />
@@ -30,7 +31,7 @@ export default function ActionButtons({
       <Link
         href={`blog/edit/${slug}`}
         className={cn(
-          buttonVariants({ variant: 'outline', className: 'size-8' }),
+          buttonVariants({ variant: 'outline', className: iconButtonClass }),
         )}
       >
         <Edit2 className="size-4" />
@@ -38,7 +39,7 @@ export default function ActionButtons({
 
       <Button
         variant="outline"
-        className="size-8 text-red-600"
+        className={`${iconButtonClass} text-red-600`}
         onClick={() => setModalOpen('deleteArticleModal', {
           id: blogId,
           title,

@@ -3,19 +3,19 @@ import Link from 'next/link'
 const ExternalLinks = [
   {
     name: 'GitHub',
-    url: 'https://github.com/NeilYeTAT',
+    url: '',
   },
   {
     name: 'bilibili',
-    url: 'https://space.bilibili.com/1859558916',
+    url: '',
   },
   {
     name: '掘金',
-    url: 'https://juejin.cn/user/64204896208252',
+    url: '',
   },
   {
     name: 'Gmail',
-    url: 'mailto:nearjilt@gmail.com',
+    url: '',
   },
 ] as const
 

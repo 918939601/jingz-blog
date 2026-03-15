@@ -1,13 +1,12 @@
 'use client'
 
-import { createTag } from '@/lib/api/tag'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { TagType } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -32,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { createTag } from '@/lib/api/tag'
 import { useModalStore } from '@/store/use-modal-store'
 
 const CreateTagSchema = z.object({
@@ -84,21 +84,29 @@ export default function CreateTagModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onModalClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>新建标签</DialogTitle>
+      <DialogContent className="paper-card-strong gap-0 rounded-[28px] border-white/80 bg-[#f8f5f0]/95 p-6 shadow-[0_28px_90px_-48px_rgba(41,66,69,0.52)] dark:border-white/12 dark:bg-[#10191b]/95 sm:max-w-[480px]">
+        <DialogHeader className="space-y-3 text-left">
+          <span className="paper-label w-fit">tag editor</span>
+          <DialogTitle className="paper-title text-3xl">新建标签</DialogTitle>
+          <p className="text-sm leading-7 text-foreground/60">
+            用统一的标签体系整理博客和笔记内容。
+          </p>
         </DialogHeader>
-        <div>
+        <div className="mt-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="tagName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>标签名</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/66">标签名</FormLabel>
                     <FormControl>
-                      <Input placeholder="请输入标签名" {...field} />
+                      <Input
+                        placeholder="请输入标签名"
+                        {...field}
+                        className="h-11 rounded-[18px] border-white/80 bg-white/82 dark:border-white/12 dark:bg-white/[0.06]"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -110,7 +118,7 @@ export default function CreateTagModal() {
                 name="tagType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>标签类型</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/66">标签类型</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -118,10 +126,10 @@ export default function CreateTagModal() {
                           field.onChange(value)
                         }}
                       >
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="h-11 w-full rounded-[18px] border-white/80 bg-white/82 dark:border-white/12 dark:bg-white/[0.06]">
                           <SelectValue placeholder="请选择" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-[20px] border-white/80 bg-[#f8f5f0]/95 dark:border-white/12 dark:bg-[#10191b]/95">
                           <SelectItem value={TagType.BLOG}>BLOG</SelectItem>
                           <SelectItem value={TagType.NOTE}>NOTE</SelectItem>
                         </SelectContent>
@@ -131,8 +139,14 @@ export default function CreateTagModal() {
                   </FormItem>
                 )}
               />
-              <DialogFooter>
-                <Button type="submit" className="cursor-pointer">保存</Button>
+              <DialogFooter className="pt-2">
+                <Button
+                  type="submit"
+                  className="cursor-pointer rounded-full px-6"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? '保存中...' : '保存'}
+                </Button>
               </DialogFooter>
             </form>
           </Form>

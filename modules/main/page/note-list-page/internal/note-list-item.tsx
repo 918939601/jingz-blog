@@ -1,8 +1,7 @@
-import ScaleUnderline from '@/components/shared/scale-underline'
-import { toZhDay } from '@/lib/time'
-import Link from 'next/link'
 import { useQueryClient } from '@tanstack/react-query'
+import Link from 'next/link'
 import { fetchNoteBySlug } from '@/lib/api/note'
+import { toZhDay } from '@/lib/time'
 
 export default function NoteListItem({
   noteTitle,
@@ -26,17 +25,19 @@ export default function NoteListItem({
 
   return (
     <Link
-      href={`note/${slug}`}
+      href={`/note/${slug}`}
       onMouseEnter={handleMouseEnter}
-      className="flex items-center justify-between gap-10 p-2 cursor-pointer
-                hover:text-purple-600
-                dark:hover:text-emerald-300 rounded-sm duration-500 group"
+      className="group paper-card flex items-center justify-between gap-4 p-5 transition-transform duration-300 hover:-translate-y-1 md:p-6"
     >
-      <h2 className="relative truncate group">
-        {noteTitle}
-        <ScaleUnderline className="dark:bg-emerald-300 bg-purple-600" />
-      </h2>
-      <time className="shrink-0 text-sm font-light text-gray-400 dark:group-hover:text-emerald-300 group-hover:text-purple-600">
+      <div className="min-w-0">
+        <p className="text-[11px] uppercase tracking-[0.24em] text-foreground/40">
+          note
+        </p>
+        <h2 className="paper-title mt-2 truncate text-xl transition-colors group-hover:text-primary md:text-2xl">
+          {noteTitle}
+        </h2>
+      </div>
+      <time className="shrink-0 text-sm text-foreground/46 transition-colors group-hover:text-primary">
         {toZhDay(createdAt)}
       </time>
     </Link>

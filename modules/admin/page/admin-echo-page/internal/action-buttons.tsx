@@ -1,6 +1,6 @@
+import { Edit2, Trash } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useModalStore } from '@/store/use-modal-store'
-import { Edit2, Trash } from 'lucide-react'
 
 export default function ActionButtons({
   id,
@@ -14,12 +14,13 @@ export default function ActionButtons({
   reference: string
 }) {
   const { setModalOpen } = useModalStore()
+  const iconButtonClass = 'glass-icon-button size-9 cursor-pointer'
 
   return (
-    <section className="flex items-center gap-1">
+    <section className="flex items-center gap-2">
       <Button
         variant="outline"
-        className="size-8 cursor-pointer"
+        className={iconButtonClass}
         onClick={() => {
           setModalOpen('editEchoModal', {
             id,
@@ -33,14 +34,14 @@ export default function ActionButtons({
       </Button>
       <Button
         variant="outline"
-        className="size-8 text-red-600 cursor-pointer"
+        className={`${iconButtonClass} text-red-600`}
         onClick={() => {
           setModalOpen('deleteEchoModal', {
             id,
           })
         }}
       >
-        <Trash />
+        <Trash className="size-4" />
       </Button>
     </section>
   )
