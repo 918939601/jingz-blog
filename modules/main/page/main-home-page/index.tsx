@@ -4,6 +4,7 @@ import { WeatherWidget } from '@/components/shared/weather-widget'
 import { fetchPublishedEchos } from '@/lib/api/echo'
 import BioSection from './internal/bio-section'
 import EchoCard from './internal/echo-card'
+import LiveClockCard from './internal/live-clock-card'
 import TechStack from './internal/tech-stack'
 import YeAvatar from './internal/ye-avatar'
 
@@ -29,7 +30,7 @@ export default async function MainLayoutContainer() {
           ease: 'easeOut',
         }}
       >
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_320px] xl:items-start">
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_320px] xl:items-stretch">
           <div className="paper-card relative overflow-hidden px-5 py-6 md:px-8 md:py-8">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(87,184,171,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(141,170,211,0.12),_transparent_28%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(87,184,171,0.14),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(141,170,211,0.08),_transparent_28%)]" />
             <div className="relative grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-center">
@@ -38,18 +39,11 @@ export default async function MainLayoutContainer() {
             </div>
           </div>
 
-          <aside className="flex flex-col gap-6 xl:sticky xl:top-28">
+          <aside className="flex h-full flex-col gap-6 xl:sticky xl:top-28">
             <Suspense fallback={<WeatherWidgetSkeleton />}>
               <WeatherWidget />
             </Suspense>
-
-            <div className="paper-card p-5 md:p-6">
-              <span className="paper-label">snapshot</span>
-              <div className="mt-4 space-y-3 text-sm leading-7 text-foreground/68">
-                <p>投简历没消息，整理整理博客吧，反正闲着也是闲着😊</p>
-                <p>不要让梦想埋没啊啊啊啊啊啊啊啊啊啊</p>
-              </div>
-            </div>
+            <LiveClockCard />
           </aside>
         </section>
 
