@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 const TIME_ZONE = 'Asia/Shanghai'
 const LOCALE = 'zh-CN'
@@ -69,27 +69,47 @@ function createClockSnapshot(now: Date): ClockSnapshot {
   }
 }
 
-export default function LiveClockCard() {
-  const [clock, setClock] = useState<ClockSnapshot | null>(null)
-  const rafRef = useRef<number | null>(null)
+let currentClockSnapshot = createClockSnapshot(new Date())
+const clockListeners = new Set<() => void>()
+let clockFrameId: number | null = null
 
-  useEffect(() => {
-    const tick = () => {
-      setClock(createClockSnapshot(new Date()))
-      rafRef.current = requestAnimationFrame(tick)
-    }
+function startClockLoop() {
+  if (clockFrameId !== null)
+    return
 
-    tick()
-
-    return () => {
-      if (rafRef.current !== null)
-        cancelAnimationFrame(rafRef.current)
-    }
-  }, [])
-
-  if (!clock) {
-    return <div className="paper-card h-[360px] w-full animate-pulse" />
+  const tick = () => {
+    currentClockSnapshot = createClockSnapshot(new Date())
+    clockListeners.forEach(listener => listener())
+    clockFrameId = requestAnimationFrame(tick)
   }
+
+  clockFrameId = requestAnimationFrame(tick)
+}
+
+function stopClockLoop() {
+  if (clockFrameId === null || clockListeners.size > 0)
+    return
+
+  cancelAnimationFrame(clockFrameId)
+  clockFrameId = null
+}
+
+function subscribeClock(listener: () => void) {
+  clockListeners.add(listener)
+  startClockLoop()
+
+  return () => {
+    clockListeners.delete(listener)
+    stopClockLoop()
+  }
+}
+
+export default function LiveClockCard() {
+  const clock = useSyncExternalStore(
+    subscribeClock,
+    () => currentClockSnapshot,
+    () => currentClockSnapshot,
+  )
 
   return (
     <section className="paper-card relative flex min-h-[360px] flex-1 overflow-hidden p-5 md:p-6">

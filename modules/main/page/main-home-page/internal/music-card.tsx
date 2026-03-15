@@ -60,6 +60,7 @@ function getAudioMimeType(src: string) {
 export default function MusicCard() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const isPlayingRef = useRef(false)
+  const pendingResumeRef = useRef(false)
 
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -81,66 +82,6 @@ export default function MusicCard() {
 
     audio.volume = volume
   }, [volume])
-
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio)
-      return
-
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration || 0)
-      setCurrentTime(audio.currentTime || 0)
-      setAudioError(null)
-    }
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime)
-    }
-
-    const handleEnded = () => {
-      setIsPlaying(false)
-      setCurrentTime(0)
-    }
-
-    const handleError = () => {
-      setAudioError('音频文件加载失败，请检查 public/music 下的资源。')
-      setIsPlaying(false)
-    }
-
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata)
-    audio.addEventListener('timeupdate', handleTimeUpdate)
-    audio.addEventListener('ended', handleEnded)
-    audio.addEventListener('error', handleError)
-
-    return () => {
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
-      audio.removeEventListener('timeupdate', handleTimeUpdate)
-      audio.removeEventListener('ended', handleEnded)
-      audio.removeEventListener('error', handleError)
-    }
-  }, [])
-
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio)
-      return
-
-    const shouldResume = isPlayingRef.current
-
-    audio.pause()
-    audio.load()
-    setCurrentTime(0)
-    setDuration(0)
-    setAudioError(null)
-
-    if (!shouldResume)
-      return
-
-    void audio.play().catch(() => {
-      setIsPlaying(false)
-      setAudioError('当前浏览器拦截了自动播放，请再点一次播放。')
-    })
-  }, [trackIndex])
 
   const bars = useMemo(() => (
     Array.from({ length: 14 }, (_, index) => {
@@ -173,7 +114,16 @@ export default function MusicCard() {
   }
 
   const switchTrack = (direction: 1 | -1) => {
+    const audio = audioRef.current
     const nextIndex = (trackIndex + direction + tracks.length) % tracks.length
+    pendingResumeRef.current = isPlayingRef.current
+
+    if (audio)
+      audio.pause()
+
+    setCurrentTime(0)
+    setDuration(0)
+    setAudioError(null)
     setTrackIndex(nextIndex)
   }
 
@@ -191,9 +141,53 @@ export default function MusicCard() {
     setCurrentTime(nextValue)
   }
 
+  const handleLoadedMetadata = async () => {
+    const audio = audioRef.current
+    if (!audio)
+      return
+
+    setDuration(audio.duration || 0)
+    setCurrentTime(audio.currentTime || 0)
+    setAudioError(null)
+
+    if (!pendingResumeRef.current)
+      return
+
+    pendingResumeRef.current = false
+
+    try {
+      await audio.play()
+      setIsPlaying(true)
+    }
+    catch {
+      setIsPlaying(false)
+      setAudioError('当前浏览器拦截了自动播放，请再点一次播放。')
+    }
+  }
+
   return (
     <section className="paper-card relative overflow-hidden p-6 md:p-8">
-      <audio ref={audioRef} preload="metadata">
+      <audio
+        key={activeTrack.src}
+        ref={audioRef}
+        preload="metadata"
+        onLoadStart={() => setAudioError(null)}
+        onEmptied={() => {
+          setCurrentTime(0)
+          setDuration(0)
+        }}
+        onLoadedMetadata={() => void handleLoadedMetadata()}
+        onTimeUpdate={event => setCurrentTime(event.currentTarget.currentTime)}
+        onEnded={() => {
+          setIsPlaying(false)
+          setCurrentTime(0)
+        }}
+        onError={() => {
+          pendingResumeRef.current = false
+          setAudioError('音频文件加载失败，请检查 public/music 下的资源。')
+          setIsPlaying(false)
+        }}
+      >
         <source src={activeTrack.src} type={getAudioMimeType(activeTrack.src)} />
       </audio>
 
