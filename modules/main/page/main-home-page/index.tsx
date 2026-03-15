@@ -48,12 +48,12 @@ export default async function MainLayoutContainer() {
           </aside>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
-          <div className="flex flex-col gap-6">
+        <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr] lg:items-stretch">
+          <div className="flex h-full flex-col gap-6">
             <EchoCard allPublishedEcho={allPublishedEcho} />
             <MusicCard />
           </div>
-          <div className="paper-card p-6 md:p-8">
+          <div className="paper-card h-full p-6 md:p-8">
             <TechStack />
           </div>
         </section>

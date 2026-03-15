@@ -203,7 +203,7 @@ export default function MusicCard() {
           <div>
             <p className="text-xs uppercase tracking-[0.24em] text-foreground/40">{activeTrack.subtitle}</p>
             <h3 className="paper-title mt-3 text-2xl md:text-3xl">{activeTrack.title}</h3>
-            <p className="mt-3 max-w-xl text-sm leading-7 text-foreground/68 md:text-base">hahah</p>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-foreground/68 md:text-base">暂无歌词哦～</p>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <button
