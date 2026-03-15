@@ -1,11 +1,14 @@
 'use client'
 
-import type { JSX } from 'react'
 import { useState } from 'react'
 import GolangSvg from '@/config/svg/golang-svg'
+import JavaSvg from '@/config/svg/java-svg'
 import NextjsSvg from '@/config/svg/nextjs-svg'
+import NodejsSvg from '@/config/svg/nodejs-svg'
+import NuxtSvg from '@/config/svg/nuxt-svg'
+import PhpSvg from '@/config/svg/php-svg'
+import PythonSvg from '@/config/svg/python-svg'
 import ReactSvg from '@/config/svg/reactjs-svg'
-import TailwindcssSvg from '@/config/svg/tailwindcss-svg'
 import TypeScriptSvg from '@/config/svg/typescript-svg'
 import VueSvg from '@/config/svg/vuejs-svg'
 import {
@@ -14,30 +17,25 @@ import {
 } from '@/lib/animation/particle-effects'
 import { cn } from '@/lib/utils'
 
-const techStackSvg: JSX.Element[] = [
-  <VueSvg key="vue" />,
-  <TypeScriptSvg key="ts" />,
-  <ReactSvg key="react" />,
-  <TailwindcssSvg key="tailwindcss" />,
-  <NextjsSvg key="next" />,
-  <GolangSvg key="go" />,
+const techStacks = [
+  { key: 'vue', label: 'Vue', icon: <VueSvg /> },
+  { key: 'ts', label: 'TypeScript', icon: <TypeScriptSvg /> },
+  { key: 'react', label: 'React', icon: <ReactSvg /> },
+  { key: 'nuxt', label: 'Nuxt', icon: <NuxtSvg /> },
+  { key: 'next', label: 'Next.js', icon: <NextjsSvg /> },
+  { key: 'go', label: 'Go', icon: <GolangSvg /> },
+  { key: 'java', label: 'Java', icon: <JavaSvg /> },
+  { key: 'python', label: 'Python', icon: <PythonSvg /> },
+  { key: 'node', label: 'Node.js', icon: <NodejsSvg /> },
+  { key: 'php', label: 'PHP', icon: <PhpSvg /> },
 ]
 
-const techStackLabel = [
-  'Vue',
-  'TypeScript',
-  'React',
-  'Tailwind CSS',
-  'Next.js',
-  'Go',
-]
-
-// * 按照上面 techStackSvg 的顺序开始点亮
-const correctOrder = [0, 1, 2, 3, 4, 5]
+// * 按照上面 techStacks 的顺序开始点亮
+const correctOrder = techStacks.map((_, index) => index)
 
 function TechStack() {
   const [clicked, setClicked] = useState<boolean[]>(
-    Array.from({ length: techStackSvg.length }, () => false),
+    Array.from({ length: techStacks.length }, () => false),
   )
   const [clickOrder, setClickOrder] = useState<number[]>([])
 
@@ -89,7 +87,7 @@ function TechStack() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
         <div className="grid gap-3 sm:grid-cols-2">
-          {techStackLabel.map((label, i) => (
+          {techStacks.map(({ label }, i) => (
             <div
               key={label}
               className={cn(
@@ -108,21 +106,21 @@ function TechStack() {
         <div className="relative mx-auto flex w-full max-w-[320px] items-center justify-center rounded-[32px] border border-white/75 bg-[radial-gradient(circle_at_center,_rgba(87,184,171,0.22),_transparent_58%),linear-gradient(180deg,rgba(255,255,255,0.78),rgba(241,245,242,0.68))] p-8 shadow-[0_24px_70px_-40px_rgba(41,66,69,0.5)] dark:border-white/10 dark:bg-[radial-gradient(circle_at_center,_rgba(87,184,171,0.16),_transparent_55%),linear-gradient(180deg,rgba(22,33,35,0.9),rgba(12,18,21,0.88))] dark:shadow-[0_24px_70px_-40px_rgba(0,0,0,0.85)]">
           <div className="pointer-events-none absolute inset-4 rounded-full border border-dashed border-black/10 dark:border-white/10" />
           <section className="relative size-[220px] animate-ye-spin-slowly rounded-full md:size-[260px]">
-            {techStackSvg.map((svg, i) => (
+            {techStacks.map(({ key, icon }, i) => (
               <div
-                key={svg.key}
+                key={key}
                 onClick={() => handleClick(i)}
                 className={cn(
-                  `absolute left-1/2 top-0 z-10 size-14 -translate-x-1/2 origin-[center_110px]
-                    cursor-pointer transition duration-300 md:size-16 md:origin-[center_130px]
+                  `absolute left-1/2 top-0 z-10 size-11 -translate-x-1/2 origin-[center_110px]
+                    cursor-pointer transition duration-300 md:size-12 md:origin-[center_130px]
                     drop-shadow-[0_12px_24px_rgba(41,66,69,0.18)] dark:drop-shadow-[0_10px_20px_rgba(0,0,0,0.45)]`,
                   clicked[i] && 'scale-110 brightness-110 drop-shadow-[0_0_24px_rgba(87,184,171,0.45)]',
                 )}
                 style={{
-                  transform: `rotate(${i * (360 / techStackSvg.length)}deg)`,
+                  transform: `rotate(${i * (360 / techStacks.length)}deg)`,
                 }}
               >
-                {svg}
+                {icon}
               </div>
             ))}
           </section>
