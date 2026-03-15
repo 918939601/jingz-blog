@@ -1,6 +1,7 @@
 'use client'
 
 import type { JSX } from 'react'
+import { useState } from 'react'
 import GolangSvg from '@/config/svg/golang-svg'
 import NextjsSvg from '@/config/svg/nextjs-svg'
 import ReactSvg from '@/config/svg/reactjs-svg'
@@ -12,8 +13,6 @@ import {
   startConfettiSakura,
 } from '@/lib/animation/particle-effects'
 import { cn } from '@/lib/utils'
-import { ArrowDown } from 'lucide-react'
-import { useState } from 'react'
 
 const techStackSvg: JSX.Element[] = [
   <VueSvg key="vue" />,
@@ -22,6 +21,15 @@ const techStackSvg: JSX.Element[] = [
   <TailwindcssSvg key="tailwindcss" />,
   <NextjsSvg key="next" />,
   <GolangSvg key="go" />,
+]
+
+const techStackLabel = [
+  'Vue',
+  'TypeScript',
+  'React',
+  'Tailwind CSS',
+  'Next.js',
+  'Go',
 ]
 
 // * 按照上面 techStackSvg 的顺序开始点亮
@@ -67,29 +75,60 @@ function TechStack() {
   }
 
   return (
-    <div>
-      <ArrowDown height={100} width={40} className="animate-bounce mx-auto" />
-      {/* 尺子量的~ */}
-      <section className="relative size-[250px] md:size-[500px] rounded-full animate-ye-spin-slowly">
-        {techStackSvg.map((svg, i) => (
-          <div
-            key={svg.key}
-            onClick={() => handleClick(i)}
-            className={cn(
-              `absolute left-1/2 -translate-x-1/2 size-1/4 md:size-32 z-10 origin-[center_125px] md:origin-[center_250px]
-                transition drop-shadow-[0_0_0.75rem_#211C84] dark:drop-shadow-[0_0_0.75rem_#006A71] hover:cursor-pointer`,
-              clicked[i]
-              && 'drop-shadow-[0_0_1.25rem_#4D55CC] dark:drop-shadow-[0_0_1.25rem_#91DDCF] brightness-125',
-            )}
-            style={{
-              transform: `rotate(${i * (360 / techStackSvg.length)}deg)`,
-            }}
-          >
-            {svg}
-          </div>
-        ))}
-      </section>
-    </div>
+    <section className="flex flex-col gap-8">
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="paper-label">stack lab</span>
+          <span className="text-xs uppercase tracking-[0.22em] text-foreground/42">tap in order for a hidden effect</span>
+        </div>
+        <h2 className="paper-title text-3xl md:text-4xl">常用技术栈</h2>
+        <p className="max-w-2xl text-sm leading-7 text-foreground/68 md:text-base">
+          有点幼稚但还挺有记忆点的小交互。图标会按环形缓慢旋转，都点亮会触发小彩蛋哦。
+        </p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {techStackLabel.map((label, i) => (
+            <div
+              key={label}
+              className={cn(
+                'rounded-[22px] border border-black/6 bg-black/[0.03] px-4 py-4 transition-colors dark:border-white/10 dark:bg-white/[0.03]',
+                clicked[i] && 'border-[#57b8ab]/55 bg-[#57b8ab]/10 dark:bg-[#57b8ab]/12',
+              )}
+            >
+              <p className="text-xs uppercase tracking-[0.24em] text-foreground/42">
+                {`0${i + 1}`}
+              </p>
+              <p className="mt-2 text-base font-semibold text-foreground">{label}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="relative mx-auto flex w-full max-w-[320px] items-center justify-center rounded-[32px] border border-white/75 bg-[radial-gradient(circle_at_center,_rgba(87,184,171,0.22),_transparent_58%),linear-gradient(180deg,rgba(255,255,255,0.78),rgba(241,245,242,0.68))] p-8 shadow-[0_24px_70px_-40px_rgba(41,66,69,0.5)] dark:border-white/10 dark:bg-[radial-gradient(circle_at_center,_rgba(87,184,171,0.16),_transparent_55%),linear-gradient(180deg,rgba(22,33,35,0.9),rgba(12,18,21,0.88))] dark:shadow-[0_24px_70px_-40px_rgba(0,0,0,0.85)]">
+          <div className="pointer-events-none absolute inset-4 rounded-full border border-dashed border-black/10 dark:border-white/10" />
+          <section className="relative size-[220px] animate-ye-spin-slowly rounded-full md:size-[260px]">
+            {techStackSvg.map((svg, i) => (
+              <div
+                key={svg.key}
+                onClick={() => handleClick(i)}
+                className={cn(
+                  `absolute left-1/2 top-0 z-10 size-14 -translate-x-1/2 origin-[center_110px]
+                    cursor-pointer transition duration-300 md:size-16 md:origin-[center_130px]
+                    drop-shadow-[0_12px_24px_rgba(41,66,69,0.18)] dark:drop-shadow-[0_10px_20px_rgba(0,0,0,0.45)]`,
+                  clicked[i] && 'scale-110 brightness-110 drop-shadow-[0_0_24px_rgba(87,184,171,0.45)]',
+                )}
+                style={{
+                  transform: `rotate(${i * (360 / techStackSvg.length)}deg)`,
+                }}
+              >
+                {svg}
+              </div>
+            ))}
+          </section>
+        </div>
+      </div>
+    </section>
   )
 }
 

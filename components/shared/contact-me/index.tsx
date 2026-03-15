@@ -21,22 +21,19 @@ const ExternalLinks = [
 
 export default function ContactMe() {
   return (
-    <main className="flex items-center justify-center flex-col gap-2 md:gap-4 w-full">
-      <h3>
-        联系方式 -
-        {' '}
-        <small>
-          如果你
-          {' '}
-          <span className="line-through text-pink-400">喜欢</span>
-          {' '}
-          我的话~
-        </small>
-      </h3>
-      <p className="flex gap-4 underline">
+    <div className="flex w-full flex-col items-center justify-center gap-4 text-center">
+      <span className="paper-label">contact</span>
+      <div className="space-y-2">
+        <h3 className="paper-title text-2xl md:text-3xl">在别处继续找到我</h3>
+        <p className="text-sm text-foreground/62 md:text-base">
+          如果你想聊技术、设计，或者只是打个招呼。
+        </p>
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-3">
         {ExternalLinks.map(link => (
           <Link
-            className="hover:text-purple-600 dark:hover:text-emerald-300"
+            className="rounded-full border border-white/85 bg-white/82 px-4 py-2 text-sm font-medium text-primary transition-transform hover:-translate-y-0.5 dark:border-white/12 dark:bg-white/[0.06] dark:text-white/85"
             href={link.url}
             key={link.url}
             target="_blank"
@@ -44,7 +41,7 @@ export default function ContactMe() {
             {link.name}
           </Link>
         ))}
-      </p>
-    </main>
+      </div>
+    </div>
   )
 }

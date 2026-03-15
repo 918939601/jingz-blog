@@ -1,9 +1,9 @@
 'use client'
 
-import Mandala from '@/config/svg/mandala'
-import { useTransitionTheme } from '@/hooks/use-transition-theme'
 import { motion, useAnimationFrame, useMotionValue } from 'motion/react'
 import { useState } from 'react'
+import Mandala from '@/config/svg/mandala'
+import { useTransitionTheme } from '@/hooks/use-transition-theme'
 
 // * 拖拽两边移动距离阈值，超过触发
 // * 移动端拉不了多少...所以调低点，虽然会让 pc 端很容易触发
@@ -19,9 +19,10 @@ export default function HorizontalDividingLine({ fill = '#6FC3C4' }: { fill?: st
   })
 
   return (
-    <div className="relative w-full flex items-center justify-center">
-      <hr className="absolute w-[45%] left-0 dark:border-accent border-indigo-500 border-dashed" />
+    <div className="relative flex w-full items-center justify-center">
+      <span className="absolute left-0 h-px w-[42%] bg-gradient-to-r from-transparent via-[#57b8ab]/50 to-[#57b8ab]/8 dark:via-[#57b8ab]/45 dark:to-transparent" />
       <motion.div
+        className="paper-card flex size-12 items-center justify-center rounded-full p-2 shadow-none"
         style={{ rotate }}
         drag="x"
         dragDirectionLock
@@ -42,7 +43,7 @@ export default function HorizontalDividingLine({ fill = '#6FC3C4' }: { fill?: st
       >
         <Mandala className="size-10 cursor-grabbing" fill={fill} />
       </motion.div>
-      <hr className="absolute w-[45%] right-0 dark:border-accent border-indigo-500 border-dashed" />
+      <span className="absolute right-0 h-px w-[42%] bg-gradient-to-l from-transparent via-[#57b8ab]/50 to-[#57b8ab]/8 dark:via-[#57b8ab]/45 dark:to-transparent" />
     </div>
   )
 }
