@@ -2,6 +2,7 @@ import { transformerCopyButton } from '@rehype-pretty/transformers'
 import rehypeKatex from 'rehype-katex'
 import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeStringify from 'rehype-stringify'
+import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import remarkParse from 'remark-parse'
@@ -12,6 +13,7 @@ import { unified } from 'unified'
 export const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
+  .use(remarkBreaks)
   .use(remarkMath)
   .use(remarkRehype)
   .use(rehypePrettyCode, {
