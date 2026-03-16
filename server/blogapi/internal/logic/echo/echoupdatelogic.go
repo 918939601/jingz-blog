@@ -46,6 +46,6 @@ func (l *EchoUpdateLogic) EchoUpdate(req *types.EchoUpdateReq) (*types.Echo, err
 		return nil, err
 	}
 	e.CreatedAt = createdAt.UTC().Format(time.RFC3339)
-	util.RevalidateNext("http://localhost:3000", os.Getenv("REVALIDATE_SECRET"), []string{"/admin/echo"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/admin/echo"})
 	return &e, nil
 }

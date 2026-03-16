@@ -31,6 +31,6 @@ func (l *NoteDeleteLogic) NoteDelete(req *types.NoteDeleteReq) (*types.Note, err
 		return nil, err
 	}
 
-	util.RevalidateNext("http://localhost:3000", os.Getenv("REVALIDATE_SECRET"), []string{"/admin/note"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/admin/note"})
 	return nil, nil
 }

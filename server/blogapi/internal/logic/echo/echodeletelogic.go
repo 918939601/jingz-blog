@@ -33,6 +33,6 @@ func (l *EchoDeleteLogic) EchoDelete(req *types.EchoDeleteReq) (*types.Echo, err
 	if _, err := db.ExecContext(l.ctx, `DELETE FROM "Echo" WHERE "id"=$1`, req.Id); err != nil {
 		return nil, err
 	}
-	util.RevalidateNext("http://localhost:3000", os.Getenv("REVALIDATE_SECRET"), []string{"/admin/echo"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/admin/echo"})
 	return nil, nil
 }

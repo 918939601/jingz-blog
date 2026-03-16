@@ -5,6 +5,7 @@ Timeout: 60000  # 60 seconds timeout for all requests
 Cors:
   - http://localhost:3000
 DatabaseDSN: postgres://username@localhost:5432/blog?sslmode=disable
+NextSiteURL: ""  # Optional; leave empty for local dev and it will default to http://localhost:3000
 Log:
   Level: debug
 AmapKey: "your-amap-api-key"

@@ -36,6 +36,6 @@ func (l *BlogDeleteLogic) BlogDelete(req *types.BlogDeleteReq) (*types.Blog, err
 		return nil, err
 	}
 
-	util.RevalidateNext("http://localhost:3000", os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog"})
 	return nil, nil
 }

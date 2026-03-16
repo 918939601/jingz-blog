@@ -96,6 +96,6 @@ func (l *BlogUpdateLogic) BlogUpdate(req *types.BlogUpdateReq) (*types.Blog, err
 	b.CreatedAt = createdAt.UTC().Format(time.RFC3339)
 	b.UpdatedAt = updatedAt.UTC().Format(time.RFC3339)
 
-	util.RevalidateNext("http://localhost:3000", os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog"})
 	return &b, nil
 }

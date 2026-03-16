@@ -92,6 +92,6 @@ func (l *NoteUpdateLogic) NoteUpdate(req *types.NoteUpdateReq) (*types.Note, err
 
 	n.CreatedAt = createdAt.UTC().Format(time.RFC3339)
 
-	util.RevalidateNext("http://localhost:3000", os.Getenv("REVALIDATE_SECRET"), []string{"/note", "/admin/note"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/note", "/admin/note"})
 	return &n, nil
 }

@@ -1,0 +1,22 @@
+Name: blogapi
+Host: 0.0.0.0
+Port: 8080
+Timeout: 60000
+Cors:
+  - https://blog.example.com
+DatabaseDSN: postgres://username:password@db-host:5432/blog?sslmode=require
+NextSiteURL: https://blog.example.com
+Log:
+  Level: info
+AmapKey: "your-amap-api-key"
+DefaultCity: "北京"
+
+# AI Configuration (optional)
+AiProvider: "glm"
+AiApiKey: "your-glm-api-key"
+AiModel: "glm-4-flash"
+AiBaseUrl: "https://open.bigmodel.cn/api/paas/v4"
+AiProxyUrl: ""
+
+# Also set REVALIDATE_SECRET in your runtime environment so the Go service
+# can call Next.js /api/revalidate after successful write operations.

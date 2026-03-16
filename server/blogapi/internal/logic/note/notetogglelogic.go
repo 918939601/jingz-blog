@@ -44,6 +44,6 @@ func (l *NoteToggleLogic) NoteToggle(req *types.NoteToggleReq) (*types.Note, err
 	}
 	n.CreatedAt = t.UTC().Format(time.RFC3339)
 
-	util.RevalidateNext("http://localhost:3000", os.Getenv("REVALIDATE_SECRET"), []string{"/admin/note"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/admin/note"})
 	return &n, nil
 }

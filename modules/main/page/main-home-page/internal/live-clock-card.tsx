@@ -27,6 +27,8 @@ const formatter = new Intl.DateTimeFormat(LOCALE, {
   second: '2-digit',
 })
 
+const serverClockSnapshot = createClockSnapshot(new Date('2024-01-01T00:00:00.000+08:00'))
+
 function getGreeting(hour: number) {
   if (hour < 6)
     return '凌晨模式'
@@ -69,7 +71,7 @@ function createClockSnapshot(now: Date): ClockSnapshot {
   }
 }
 
-let currentClockSnapshot = createClockSnapshot(new Date())
+let currentClockSnapshot = serverClockSnapshot
 const clockListeners = new Set<() => void>()
 let clockFrameId: number | null = null
 
@@ -108,7 +110,7 @@ export default function LiveClockCard() {
   const clock = useSyncExternalStore(
     subscribeClock,
     () => currentClockSnapshot,
-    () => currentClockSnapshot,
+    () => serverClockSnapshot,
   )
 
   return (

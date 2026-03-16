@@ -6,6 +6,7 @@ type Config struct {
 	rest.RestConf
 	DatabaseDSN string
 	Cors        []string
+	NextSiteURL string `json:",optional"` // Optional Next.js site URL for revalidation; defaults to localhost in local dev
 	AmapKey     string
 	DefaultCity string // Default city for localhost development
 	AiProvider  string // AI provider: openai, deepseek, glm, qwen, custom
