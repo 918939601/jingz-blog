@@ -9,7 +9,7 @@ services:
     ports:
       - "0.0.0.0:8080:8080"
     environment:
-      REVALIDATE_SECRET: replace-me
+      REVALIDATE_SECRET: b671528b34a117f04edda6bfa1ac443e4672f8b5d34d5455b054cd03852ccea7
       NEXT_SITE_URL: ""
     volumes:
       - ./blogapi.deploy.yaml:/app/config/blogapi.yaml:ro
