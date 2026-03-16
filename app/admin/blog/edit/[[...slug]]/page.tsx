@@ -1,8 +1,8 @@
-import { redirect } from 'next/navigation'
+import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { fetchBlogBySlug } from '@/lib/api/blog'
 import { fetchTags } from '@/lib/api/tag'
-import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { requireAdmin } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
 export default async function Page({
   params,
@@ -17,7 +17,7 @@ export default async function Page({
   }
 
   const slug = (await params).slug?.[0] ?? null
-  
+
   let article = null
   if (slug) {
     try {

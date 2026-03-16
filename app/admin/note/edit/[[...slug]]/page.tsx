@@ -1,6 +1,6 @@
+import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { fetchNoteBySlug } from '@/lib/api/note'
 import { fetchTags } from '@/lib/api/tag'
-import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { requireAdmin } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 

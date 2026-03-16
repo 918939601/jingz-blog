@@ -25,7 +25,9 @@ export interface TagDTO {
 
 export async function fetchTags(tagType?: string) {
   const params = new URLSearchParams()
-  if (tagType) params.set('tagType', tagType)
+  if (tagType)
+    params.set('tagType', tagType)
+
   const qs = params.toString()
   return apiFetch<TagDTO[]>(`/api/tags${qs ? `?${qs}` : ''}`)
 }
