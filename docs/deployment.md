@@ -149,3 +149,64 @@ docker compose -f deploy/docker-compose.api.yml logs -f
    domain with your real API domain.
 8. Reload Nginx.
 9. Add TLS with Certbot if needed.
+
+## Full Ubuntu Deployment
+
+If you want to skip Vercel completely, you can run both services on the same
+Ubuntu server with Docker Compose.
+
+Reference files:
+
+- `Dockerfile.web`
+- `server/Dockerfile.blogapi`
+- `deploy/docker-compose.full.yml`
+- `deploy/blogapi.deploy.yaml.example`
+
+Suggested runtime topology:
+
+- `http://SERVER_IP:3000` -> Next.js frontend
+- `http://SERVER_IP:8080` -> Go API backend
+- Next.js server-side requests -> `http://blogapi:8080`
+
+Basic steps:
+
+1. Copy the repository to the server.
+2. Copy `deploy/blogapi.deploy.yaml.example` to `deploy/blogapi.deploy.yaml`.
+3. Edit `deploy/blogapi.deploy.yaml` with the production values:
+   - `DatabaseDSN`
+   - `Cors`
+   - `AmapKey`
+   - optional AI config
+4. Edit `deploy/docker-compose.full.yml` and replace:
+   - `SITE_URL`
+   - `NEXT_PUBLIC_ADMIN_EMAILS`
+   - `AUTH_SECRET`
+   - `AUTH_GITHUB_ID`
+   - `AUTH_GITHUB_SECRET`
+   - `NEXT_PUBLIC_GO_API_BASE`
+   - `REVALIDATE_SECRET`
+   - `UPLOADTHING_TOKEN`
+   - `DATABASE_URL`
+5. Keep these two values as-is unless you know you need something else:
+   - `GO_API_BASE=http://blogapi:8080`
+   - `NEXT_SITE_URL=http://blogweb:3000`
+6. Start both services:
+
+```bash
+docker compose -f deploy/docker-compose.full.yml up -d --build
+```
+
+7. Check status and logs:
+
+```bash
+docker compose -f deploy/docker-compose.full.yml ps
+docker compose -f deploy/docker-compose.full.yml logs -f blogweb
+docker compose -f deploy/docker-compose.full.yml logs -f blogapi
+```
+
+8. Verify:
+   - open `http://SERVER_IP:3000`
+   - open `http://SERVER_IP:8080/api/blogs`
+
+This deployment path does not affect local development. Your local `.env`,
+`pnpm dev`, and local Go service can remain unchanged.
