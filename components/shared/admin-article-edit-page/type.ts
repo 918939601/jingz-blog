@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import { ARTICLE_TITLE_MAX_LENGTH } from '@/config/constant'
 import { REGEX } from '@/lib/regex'
-import { z } from 'zod'
 
 export const ArticleSchema = z.object({
   title: z

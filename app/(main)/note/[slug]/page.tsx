@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import ArticleDisplayPage from '@/components/shared/article-display-page'
 import AskAiFloating from '@/components/shared/ask-ai-floating'
 import CommentCard from '@/components/shared/comment-card'
@@ -5,7 +6,6 @@ import HorizontalDividingLine from '@/components/shared/horizontal-dividing-line
 import ScrollIndicator from '@/components/shared/scroll-indicator'
 import { fetchNoteHtmlBySlug } from '@/lib/api/note'
 import { processor } from '@/lib/markdown'
-import { notFound } from 'next/navigation'
 
 export const dynamicParams = true
 

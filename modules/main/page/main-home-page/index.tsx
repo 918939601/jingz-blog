@@ -17,8 +17,21 @@ function WeatherWidgetSkeleton() {
 }
 
 export default async function MainLayoutContainer() {
-  const allPublishedEcho = (await fetchPublishedEchos())
-    .map(e => ({ ...e, createdAt: new Date(e.createdAt) }))
+  let allPublishedEcho: Array<{
+    id: number
+    reference: string
+    content: string
+    isPublished: boolean
+    createdAt: Date
+  }> = []
+
+  try {
+    allPublishedEcho = (await fetchPublishedEchos())
+      .map(e => ({ ...e, createdAt: new Date(e.createdAt) }))
+  }
+  catch (error) {
+    console.error('Failed to load published echos for home page:', error)
+  }
 
   return (
     <div className="relative">

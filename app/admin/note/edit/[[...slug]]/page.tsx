@@ -1,8 +1,8 @@
+import { redirect } from 'next/navigation'
 import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { fetchNoteBySlug } from '@/lib/api/note'
 import { fetchTags } from '@/lib/api/tag'
 import { requireAdmin } from '@/lib/auth'
-import { redirect } from 'next/navigation'
 
 export default async function Page({
   params,
