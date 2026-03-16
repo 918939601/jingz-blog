@@ -1,192 +1,254 @@
-# yeyu-blog
+# jingz-blog
 
-个人开发的全栈博客项目，部署在 vercel 上，只有域名花了钱，感谢/感恩 vercel
+一个前后端分离的个人博客项目：
 
-博客地址 [叶鱼 | 业余](https://www.useyeyu.cc)
+- 前台：博客、短笔记、关于页、天气卡片、评论
+- 后台：博客 / 笔记 / 标签 / Echo 管理
+- 技术组合：Next.js 15 + React 19 + Tailwind CSS 4 + Prisma + NextAuth + go-zero
 
-> 国内访问速度不确定，可能需要「出国留学」才能访问（逃），我在手机上测试过，好像访问速度还挺快的，还没有失败过，不确保以后~
+![首页预览](.github/assets/light-home.png)
 
-## 主要技术栈
+## 项目结构
 
-- Nextjs
-- React
+```text
+app/                    Next.js App Router 页面与 API Route
+components/             通用组件
+modules/                页面级模块
+config/                 站点文案、元数据、图片与 SVG
+lib/                    接口封装、工具函数、鉴权辅助
+prisma/                 Prisma schema 与 migrations
+server/blogapi/         go-zero 后端服务
+public/                 静态资源
+```
+
+## 功能概览
+
+- 前台博客列表与详情页
+- 前台笔记列表与详情页
+- 首页 Echo 展示
+- GitHub OAuth 登录后台
+- 管理端内容增删改查与发布切换
+- UploadThing 图片上传
+- Giscus 评论系统
+- 天气信息展示
+- Go 后端写操作后触发 Next 页面再验证
+
+## 技术栈
+
+### 前端
+
+- Next.js 15
+- React 19
 - TypeScript
-- Tailwind CSS
-- Shadcnui
+- Tailwind CSS 4
 - Motion
-- Zustand
+- TanStack Query
 - Prisma
+- NextAuth v5 beta
 
-## 截图展示
+### 后端
 
-![light-mode-home-preview](.github/assets/light-home.png)
+- Go 1.24
+- go-zero
+- PostgreSQL
 
-![dark-mode-note-preview](.github/assets/dark-note.png)
+## 环境要求
 
-![light-mode-admin-preview](.github/assets/light-admin.png)
-
-## 本地运行
-
-确保你已安装：
-
-- Git
-- Pnpm
 - Node.js >= 20
+- pnpm
+- Go >= 1.24
+- PostgreSQL
 
-### 部署的视频教程
+## 快速开始
 
-[vercel部署视频教程](https://www.bilibili.com/video/BV1LJ7ozmECq)
+### 1. 克隆项目并安装依赖
 
-### 获取项目代码
-
-**首先 fork 仓库源代码到你的仓库，然后 clone 你 fork 的仓库代码**
-
-```shell
-git clone {REPO}
-```
-
-### 安装依赖
-
-```shell
+```bash
+git clone <your-repo-url>
+cd jingz-blog
 pnpm install
 ```
-将项目根目录下的 `.env.example` 的 `example` 去掉:
 
-现在你应该有一个 `.env` 文件，按照要求填写字段~
+### 2. 配置 Next 环境变量
 
-其实就两个，数据库的之后再填写：
+复制一份环境变量文件：
 
-```shell
-SITE_URL=
-NEXT_PUBLIC_ADMIN_EMAILS=
+```bash
+cp .env.example .env.local
 ```
 
-### 创建/白嫖数据库
+`.env.local` 最少需要这些字段：
 
-> 为了测试方便，建议本地运行也直接使用白嫖的数据库，就没必要本地折腾数据库了~
+```ini
+SITE_URL=http://localhost:3000
+NEXT_PUBLIC_ADMIN_EMAILS=you@example.com
 
-- 注册 vercel 帐号 -> [vercel官网](https://vercel.com/)
-- 点击导航按扭的 `Storage` 选项，创建数据库
-- 选择 `Marketplace Database Providers` 下面的 `Neon` ~
-  - 建议选择 Washington, D.C., USA (East) 地区
+AUTH_SECRET=replace-me
+AUTH_GITHUB_ID=replace-me
+AUTH_GITHUB_SECRET=replace-me
 
-至此数据库已经白嫖成功了，接着我们来和数据库建立连接~
+NEXT_PUBLIC_GO_API_BASE=http://localhost:8080
+GO_API_BASE=http://localhost:8080
 
-### 连接数据库
+REVALIDATE_SECRET=replace-me
 
-将 `Quickstart` 下的 `.env.local` 面板下的所有环境变量复制到 `.env` 文件中~
+UPLOADTHING_TOKEN=replace-me
 
-初始化表
-```shell
+DATABASE_URL=postgres://username:password@localhost:5432/blog?sslmode=disable
+```
+
+说明：
+
+- `NEXT_PUBLIC_ADMIN_EMAILS`：允许进入后台的 GitHub 邮箱白名单，多个邮箱用逗号分隔
+- `NEXT_PUBLIC_GO_API_BASE` / `GO_API_BASE`：Next 访问 Go API 的地址，本地默认是 `http://localhost:8080`
+- `REVALIDATE_SECRET`：Next 与 Go 共用，用于 `/api/revalidate`
+- `AUTH_*`：GitHub OAuth 登录
+- `UPLOADTHING_TOKEN`：图片上传用，未配置时上传能力不可用
+- `DATABASE_URL`：Prisma 连接 PostgreSQL
+
+### 3. 初始化数据库
+
+```bash
 npx prisma migrate dev --name init
+pnpm prisma generate
 ```
 
-启动！
-```shell
-pnpm install
+### 4. 配置 Go 后端
+
+复制配置文件：
+
+```bash
+cp server/blogapi/etc/blogapi.yaml.example server/blogapi/etc/blogapi.yaml
+```
+
+然后修改 `server/blogapi/etc/blogapi.yaml` 里的关键字段：
+
+```yaml
+Name: blogapi
+Host: 0.0.0.0
+Port: 8080
+Cors:
+  - http://localhost:3000
+DatabaseDSN: postgres://username:password@localhost:5432/blog?sslmode=disable
+AmapKey: your-amap-api-key
+DefaultCity: 北京
+
+# AI 可选
+AiProvider: glm
+AiApiKey: your-api-key
+AiModel: glm-4-flash
+AiBaseUrl: https://open.bigmodel.cn/api/paas/v4
+AiProxyUrl:
+```
+
+额外说明：
+
+- `DatabaseDSN` 需要和你的 PostgreSQL 实际连接信息一致
+- `AmapKey` 建议配置，否则天气能力不可用或体验不完整
+- AI 配置是可选的，只在你使用 AI 接口时需要
+- Go 端触发 Next 再验证时会读取系统环境变量里的 `REVALIDATE_SECRET`
+
+本地启动 Go 前，先导出这个变量：
+
+```bash
+export REVALIDATE_SECRET=replace-me
+```
+
+### 5. 启动 Go 后端
+
+在仓库根目录执行：
+
+```bash
+cd server
+go run ./blogapi -f blogapi/etc/blogapi.yaml
+```
+
+默认监听：
+
+```text
+http://localhost:8080
+```
+
+### 6. 启动 Next 前端
+
+回到仓库根目录：
+
+```bash
 pnpm dev
 ```
 
-至此项目的前端展示是可以跑起来了，数据库也创建好了~
+默认访问：
 
-### 与 go-zero 后端对接所需环境变量
-
-> 若你启用 go-zero 作为后端，请在 `.env` 中新增以下变量：
-
-```ini
-# Go API 基地址（用于前端调用）
-GO_API_BASE=
-
-# Next revalidate 路由的密钥，与 app/api/revalidate/route.ts 对应
-REVALIDATE_SECRET=
-
-# 自定义对外 Bearer Token 的签名密钥（Next 与 Go 共用）
-JWT_SECRET=
+```text
+http://localhost:3000
 ```
 
-配置完成后，Next 前端将通过 `lib/api/client.ts` 使用 `GO_API_BASE` 访问 Go 接口；
-Go 端进行写操作成功后调用 Next 的 `/api/revalidate` 并携带 `x-revalidate-secret: ${REVALIDATE_SECRET}` 触发页面再验证。
+## 本地开发注意事项
 
-但控制台大概还在报错，问题不大，接下来会解决~
+- 当前首页、文章列表、笔记列表、天气等数据都依赖 Go API
+- 如果 `http://localhost:8080` 没启动，前端会出现接口报错，部分页面无法正常展示
+- 管理后台依赖 GitHub 登录和邮箱白名单
+- UploadThing 与 Giscus 都需要你自己替换成可用配置
 
-### admin 拦截
+## GitHub OAuth 配置
 
-现在环境变量还有一些没有填写，控制台也在报错，如果此时直接访问 `http://localhost:3000/admin` 是可以直接访问的，没有任何拦截~
+去 GitHub 创建 OAuth App：
 
-接下来就是配置 oauth 登录了。
+- Homepage URL: `http://localhost:3000`
+- Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
 
-运行生成 AUTH_SECRET:
+然后把拿到的值填进 `.env.local`：
 
-```shell
+```ini
+AUTH_GITHUB_ID=your_client_id
+AUTH_GITHUB_SECRET=your_client_secret
+```
+
+`AUTH_SECRET` 可以通过下面的命令生成：
+
+```bash
 npx auth secret
 ```
 
-执行完后，多了一个 `.env.local` 文件，多了环境变量 `AUTH_SECRET`，现在再访问 `/admin` 页面，会直接重定向到登录页面~
+## 常用命令
 
-### admin 登录/创建 oauth 应用
-
-前往 [oauth app](https://github.com/settings/applications/new) 创建你的 oauth 应用。
-
-表单填写：
-Homepage URL: http://localhost:3000
-
-Authorization callback URL: http://localhost:3000/api/auth/callback/github
-
-获取 CLIENT_ID 和 CLIENT_SECRET，填写到 `.env.local` 文件中。
-
-可以参考 [auth官网](https://authjs.dev/getting-started/authentication/oauth)
-
-```env
-AUTH_GITHUB_ID={CLIENT_ID}
-AUTH_GITHUB_SECRET={CLIENT_SECRET}
+```bash
+pnpm dev          # 启动 Next 开发环境（Turbopack）
+pnpm dev:no       # 不使用 Turbopack
+pnpm build        # 生产构建
+pnpm start        # 本地启动生产构建
+pnpm lint         # Next lint
+pnpm lint:es      # ESLint 检查
+pnpm lint:es:fix  # ESLint 自动修复
+pnpm ts:check     # TypeScript 类型检查
+pnpm prisma generate
+npx prisma migrate dev --name <name>
 ```
 
-就完成登录功能了~
+## 可自定义内容
 
-### 图片存储
+- 站点元数据与基础文案：`config/constant/index.ts`
+- 首页头像：`config/img/avatar.webp`
+- 首页简介：`modules/main/page/main-home-page/internal/bio-section.tsx`
+- 关于页内容：`modules/main/page/about-page/index.tsx`
+- 联系方式：`components/shared/contact-me/index.tsx`
+- 评论仓库配置：`config/constant/index.ts`
 
-前往 [uploadthing](https://uploadthing.com/) 注册帐号，新建 app，在 `env` 文件中填写 API Keys。
-```env
-UPLOADTHING_TOKEN=
-```
+## 部署说明
 
-### 修改网站信息
+这个项目更适合按下面方式部署：
 
-> 肥肠抱歉，由于本人技术太菜，所以很多地方都需要你手动去修改代码才能更新自己的配置，我会尽量告诉你各个文件的位置。
+- Next.js 部署到 Vercel
+- Go API 独立部署
+- PostgreSQL 使用云数据库
+- `NEXT_PUBLIC_GO_API_BASE` / `GO_API_BASE` 指向你的 Go 服务地址
+- `REVALIDATE_SECRET` 需要在 Next 与 Go 两边保持一致
 
-- config
-  - constant 目录中包含项目的 metadata 和 首页动画文字展示，评论系统的仓库地址
-  - img
-    - 首页展示的个人头像，建议图片采用 webp 格式，再压缩一下~
-    - [推荐图片处理工具](https://imagestool.com/)
-  - svg
-    - 存放底部的技术栈展示的 svg
+## 已知事项
 
-- modules/main/page/main-home-page/internal/bio-section.tsx
-  - 首页个人简介
+- 仓库里存在 Go 配置文件示例，但真正运行时仍需要你按自己的环境补齐数据库、地图与 AI 配置
+- `package.json` 中有 `seed:sample` 脚本；如果你要使用它，先确认本地 `scripts/seed.js` / 脚本路径是否和当前脚本定义一致
 
-- modules/main/page/about-page/index.tsx
-  - /about 页面的简介
-
-- components/shared/contact-me/index.tsx
-  - 底部联系方式
-
-### 安装评论系统
-
-[评论系统官方文档](https://giscus.app/zh-CN)
-
-首先按照上面官方文档的步骤来，去自己的 GitHub 创建一个仓库:
-
-- 该仓库是公开的，否则访客将无法查看 discussion。
-- giscus app 已安装，否则访客将无法评论和回应。
-- Discussions 功能已在你的仓库中启用。
-
-页面 ↔️ discussion 映射关系，选择 **Discussion 的标题包含特定字符串**，不需要填，只需要选择该选项就行了。
-
-最后在 「启用 giscus」下有一个代码片段，**不要直接复制**，只需要复制 `data-repo` 和 `data-repo-id` 的值就可以了，其他配置项可以自行研究~
-
-组件在 `components/shared/comment-card/index.tsx` 下，配置 `data-repo` 和 `data-repo-id` 的值在 `config/constant/index.ts` 中配置。
-
-## 特别感谢🙏🏻
+## 致谢
 
 - [fuxiaochen](https://github.com/aifuxi/fuxiaochen)
