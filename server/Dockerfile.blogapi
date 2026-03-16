@@ -1,0 +1,27 @@
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /src
+
+COPY server/go.mod server/go.sum ./
+RUN go mod download
+
+COPY server ./
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/blogapi ./blogapi
+
+FROM alpine:3.20
+
+RUN addgroup -S app && adduser -S -G app app
+
+WORKDIR /app
+
+COPY --from=builder /out/blogapi /app/blogapi
+
+RUN mkdir -p /app/config && chown -R app:app /app
+
+USER app
+
+EXPOSE 8080
+
+ENTRYPOINT ["/app/blogapi"]
+CMD ["-f", "/app/config/blogapi.yaml"]

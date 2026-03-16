@@ -1,0 +1,13 @@
+.git
+.github
+.next
+node_modules
+.pnpm-store
+.env
+.env.local
+.env.production
+README.md
+public/upload
+server/blogapi/tmp
+server/blogapi/etc/blogapi.yaml
+deploy/blogapi.deploy.yaml

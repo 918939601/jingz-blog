@@ -1,0 +1,15 @@
+services:
+  blogapi:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile.blogapi
+    image: jingz-blog-api:latest
+    container_name: jingz-blog-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      REVALIDATE_SECRET: replace-me
+      NEXT_SITE_URL: https://blog.example.com
+    volumes:
+      - ./blogapi.deploy.yaml:/app/config/blogapi.yaml:ro
