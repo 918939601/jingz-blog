@@ -20,6 +20,8 @@ const ExternalLinks = [
 ] as const
 
 export default function ContactMe() {
+  const configuredLinks = ExternalLinks.filter(link => link.url.trim().length > 0)
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4 text-center">
       <span className="paper-label">contact</span>
@@ -31,16 +33,22 @@ export default function ContactMe() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-3">
-        {ExternalLinks.map(link => (
-          <Link
-            className="rounded-full border border-white/85 bg-white/82 px-4 py-2 text-sm font-medium text-primary transition-transform hover:-translate-y-0.5 dark:border-white/12 dark:bg-white/[0.06] dark:text-white/85"
-            href={link.url}
-            key={link.name}
-            target="_blank"
-          >
-            {link.name}
-          </Link>
-        ))}
+        {configuredLinks.length > 0
+          ? configuredLinks.map(link => (
+              <Link
+                className="rounded-full border border-white/85 bg-white/82 px-4 py-2 text-sm font-medium text-primary transition-transform hover:-translate-y-0.5 dark:border-white/12 dark:bg-white/[0.06] dark:text-white/85"
+                href={link.url}
+                key={`${link.name}-${link.url}`}
+                target="_blank"
+              >
+                {link.name}
+              </Link>
+            ))
+          : (
+              <p className="text-sm text-foreground/50">
+                暂未配置外部链接
+              </p>
+            )}
       </div>
     </div>
   )
