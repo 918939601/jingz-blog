@@ -47,11 +47,16 @@ export async function fetchBlogs(params: {
   pageSize?: number
 } = {}) {
   const q = new URLSearchParams()
-  if (params.query) q.set('query', params.query)
-  if (params.tags) q.set('tags', params.tags)
-  if (params.published !== undefined) q.set('published', String(params.published))
-  if (params.page) q.set('page', String(params.page))
-  if (params.pageSize) q.set('pageSize', String(params.pageSize))
+  if (params.query)
+    q.set('query', params.query)
+  if (params.tags)
+    q.set('tags', params.tags)
+  if (params.published !== undefined)
+    q.set('published', String(params.published))
+  if (params.page)
+    q.set('page', String(params.page))
+  if (params.pageSize)
+    q.set('pageSize', String(params.pageSize))
   const qs = q.toString()
   return apiFetch<BlogListResponse>(`/api/blogs${qs ? `?${qs}` : ''}`)
 }

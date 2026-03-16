@@ -20,9 +20,11 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
       try {
         const errorData = await response.json()
         errorMsg = errorData.message || errorData.error || errorMsg
-      } catch {
+      }
+      catch {
         const errorText = await response.text().catch(() => '')
-        if (errorText) errorMsg = errorText
+        if (errorText)
+          errorMsg = errorText
       }
       console.error('[AI API] Error response:', errorMsg)
       throw new Error(errorMsg)
@@ -89,7 +91,7 @@ export async function askAiStream(
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'text/event-stream',
+        'Accept': 'text/event-stream',
       },
     })
 
@@ -101,7 +103,8 @@ export async function askAiStream(
       }
       catch {
         const errorText = await response.text().catch(() => '')
-        if (errorText) errorMsg = errorText
+        if (errorText)
+          errorMsg = errorText
       }
       throw new Error(errorMsg)
     }
@@ -116,7 +119,8 @@ export async function askAiStream(
 
     while (true) {
       const { done, value } = await reader.read()
-      if (done) break
+      if (done)
+        break
 
       buffer += decoder.decode(value, { stream: true })
       const parts = buffer.split('\n\n')
@@ -124,9 +128,11 @@ export async function askAiStream(
 
       for (const part of parts) {
         const line = part.trim()
-        if (!line.startsWith('data:')) continue
+        if (!line.startsWith('data:'))
+          continue
         const data = line.slice(5).trim()
-        if (!data || data === '[DONE]') continue
+        if (!data || data === '[DONE]')
+          continue
         if (data.startsWith('[ERROR]')) {
           throw new Error(data.replace('[ERROR]', '').trim() || 'AI stream error')
         }

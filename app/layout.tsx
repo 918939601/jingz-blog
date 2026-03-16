@@ -1,8 +1,8 @@
-import { metadata } from '@/config/constant'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import './globals.css'
+import { metadata } from '@/config/constant'
 import RootLayoutClient from './layout-client'
+import './globals.css'
 
 export { metadata }
 

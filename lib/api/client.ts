@@ -10,7 +10,7 @@ export async function apiFetch<T = any>(path: string, init: RequestInit = {}): P
   // const token = await getExternalBearerToken()
   // if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  const res = await fetch(`${base}${path}`.replace(/\/+$/,'').replace(/([^:])\/\//g,'$1/'), {
+  const res = await fetch(`${base}${path}`.replace(/\/+$/, '').replace(/([^:])\/\//g, '$1/'), {
     ...init,
     headers,
     cache: 'no-store',
@@ -18,12 +18,16 @@ export async function apiFetch<T = any>(path: string, init: RequestInit = {}): P
 
   if (!res.ok) {
     let err: any
-    try { err = await res.json() } catch { err = { message: res.statusText } }
+    try {
+      err = await res.json()
+    }
+    catch {
+      err = { message: res.statusText }
+    }
+
     throw new Error(err?.message ?? 'Request failed')
   }
-  if (res.status === 204) return null as T
+  if (res.status === 204)
+    return null as T
   return await res.json() as T
 }
-
-
-

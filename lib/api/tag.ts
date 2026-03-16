@@ -32,7 +32,7 @@ export async function fetchTags(tagType?: string) {
   return apiFetch<TagDTO[]>(`/api/tags${qs ? `?${qs}` : ''}`)
 }
 
-export async function createTag(body: { tagName: string; tagType: string }) {
+export async function createTag(body: { tagName: string, tagType: string }) {
   return apiFetch<TagDTO>(`/api/tags`, {
     method: 'POST',
     body: JSON.stringify(body),

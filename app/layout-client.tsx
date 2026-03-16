@@ -1,8 +1,9 @@
 'use client'
 
-import { ThemeProvider } from '@/components/ui/theme-provider'
+import type { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactNode, useMemo } from 'react'
+import { useMemo } from 'react'
+import { ThemeProvider } from '@/components/ui/theme-provider'
 
 export default function RootLayoutClient({
   children,
@@ -21,7 +22,7 @@ export default function RootLayoutClient({
           },
         },
       }),
-    []
+    [],
   )
 
   return (

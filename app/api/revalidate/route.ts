@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   const secret = req.headers.get('x-revalidate-secret')
@@ -30,6 +31,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ revalidated: true })
 }
-
-
-
