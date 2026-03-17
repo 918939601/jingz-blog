@@ -1,6 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { fetchNoteBySlug } from '@/lib/api/note'
 import { toZhDay } from '@/lib/time'
 
 export default function NoteListItem({
@@ -12,21 +10,10 @@ export default function NoteListItem({
   createdAt: Date
   slug: string
 }) {
-  const queryClient = useQueryClient()
-
-  const handleMouseEnter = () => {
-    // 预加载笔记详情
-    queryClient.prefetchQuery({
-      queryKey: ['note', slug],
-      queryFn: () => fetchNoteBySlug(slug),
-      staleTime: 1000 * 60 * 5,
-    })
-  }
-
   return (
     <Link
       href={`/note/${slug}`}
-      onMouseEnter={handleMouseEnter}
+      prefetch={false}
       className="group paper-card flex items-center justify-between gap-4 p-5 transition-transform duration-300 hover:-translate-y-1 md:p-6"
     >
       <div className="min-w-0">
