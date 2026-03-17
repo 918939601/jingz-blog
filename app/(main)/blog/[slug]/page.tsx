@@ -4,15 +4,14 @@ import AskAiFloating from '@/components/shared/ask-ai-floating'
 import CommentCard from '@/components/shared/comment-card'
 import HorizontalDividingLine from '@/components/shared/horizontal-dividing-line'
 import ScrollIndicator from '@/components/shared/scroll-indicator'
-import { fetchBlogHtmlBySlug } from '@/lib/api/blog'
-import { processor } from '@/lib/markdown'
+import { getCachedBlogPageData } from '@/lib/article-page-data'
 
 export const dynamicParams = true
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   try {
-    const article = await fetchBlogHtmlBySlug((await params).slug)
+    const article = await getCachedBlogPageData((await params).slug)
     return {
       title: article.title,
     }
@@ -35,7 +34,7 @@ export default async function Page({
 }) {
   let article
   try {
-    article = await fetchBlogHtmlBySlug((await params).slug)
+    article = await getCachedBlogPageData((await params).slug)
   }
   catch {
     notFound()
@@ -44,9 +43,7 @@ export default async function Page({
   if (!article)
     notFound()
 
-  const { content, title, createdAt, tags, id } = article
-  const htmlContent = String(await processor.process(content || ''))
-  const tagNames = (tags || []).map(v => v.tagName)
+  const { htmlContent, title, createdAt, tags, id } = article
   const articleDate = new Date(createdAt)
 
   return (
@@ -55,7 +52,7 @@ export default async function Page({
         title={title}
         createdAt={articleDate}
         content={htmlContent}
-        tags={tagNames}
+        tags={tags}
       />
       <section className="paper-card px-5 py-6 md:px-8 md:py-7">
         <HorizontalDividingLine fill="#57b8ab" />
@@ -64,7 +61,7 @@ export default async function Page({
         </div>
       </section>
       <ScrollIndicator />
-      <AskAiFloating title={title} tags={tagNames} />
+      <AskAiFloating title={title} tags={tags} />
     </div>
   )
 }

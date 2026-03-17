@@ -1,11 +1,9 @@
 'use client'
 
+import type { BlogDTO } from '@/lib/api/blog'
 import type { Variants } from 'motion/react'
-import { useQuery } from '@tanstack/react-query'
 import * as motion from 'motion/react-client'
 import { useMemo, useState } from 'react'
-import Loading from '@/components/shared/loading'
-import { fetchBlogs } from '@/lib/api/blog'
 import BlogListItem from './internal/blog-list-item'
 
 const containerVariants = {
@@ -30,16 +28,10 @@ const itemVariants: Variants = {
   },
 }
 
-export default function BlogListPage() {
-  const { data: response, isPending } = useQuery({
-    queryKey: ['blog-list-public'],
-    queryFn: () => fetchBlogs({ pageSize: 1000 }),
-    staleTime: 1000 * 60 * 5,
-  })
-
+export default function BlogListPage({ initialBlogs }: { initialBlogs: BlogDTO[] }) {
   const allBlogs = useMemo(
-    () => response?.items?.filter(b => b.isPublished) || [],
-    [response],
+    () => initialBlogs,
+    [initialBlogs],
   )
   const [query, setQuery] = useState('')
 
@@ -55,10 +47,6 @@ export default function BlogListPage() {
       return titleHit || contentHit
     })
   }, [allBlogs, query])
-
-  if (isPending) {
-    return <Loading />
-  }
 
   if (allBlogs.length === 0) {
     return <p className="m-auto">虚无。</p>

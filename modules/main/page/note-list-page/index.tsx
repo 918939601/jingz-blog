@@ -1,11 +1,9 @@
 'use client'
 
+import type { NoteDTO } from '@/lib/api/note'
 import type { Variants } from 'motion/react'
-import { useQuery } from '@tanstack/react-query'
 import * as motion from 'motion/react-client'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Loading from '@/components/shared/loading'
-import { fetchNotes } from '@/lib/api/note'
 import NoteListItem from './internal/note-list-item'
 
 const containerVariants = {
@@ -30,19 +28,11 @@ const itemVariants: Variants = {
   },
 }
 
-export default function NoteListPage() {
-  const { data: response, isPending } = useQuery({
-    queryKey: ['note-list-public'],
-    queryFn: () => fetchNotes({ pageSize: 1000 }),
-    staleTime: 1000 * 60 * 5,
-  })
-
+export default function NoteListPage({ initialNotes }: { initialNotes: NoteDTO[] }) {
   const publishedNotes = useMemo(
     () =>
-      response?.items
-        ?.filter(n => n.isPublished)
-        .map(n => ({ ...n, createdAt: new Date(n.createdAt) })) || [],
-    [response],
+      initialNotes.map(n => ({ ...n, createdAt: new Date(n.createdAt) })),
+    [initialNotes],
   )
 
   const [query, setQuery] = useState('')
@@ -79,10 +69,6 @@ export default function NoteListPage() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
-
-  if (isPending) {
-    return <Loading />
-  }
 
   if (publishedNotes.length === 0) {
     return <p className="m-auto">虚无。</p>
