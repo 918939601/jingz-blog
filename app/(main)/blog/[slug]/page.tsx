@@ -8,6 +8,7 @@ import { fetchBlogHtmlBySlug } from '@/lib/api/blog'
 import { processor } from '@/lib/markdown'
 
 export const dynamicParams = true
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   try {
