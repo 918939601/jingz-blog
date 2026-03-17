@@ -88,6 +88,7 @@ func (l *NoteListLogic) NoteList(req *types.NoteListReq) (*types.NoteListResp, e
 	defer rows.Close()
 
 	items := make([]types.Note, 0, size)
+	noteIndexByID := make(map[int64]int, size)
 	for rows.Next() {
 		var n types.Note
 		var t time.Time
@@ -96,27 +97,40 @@ func (l *NoteListLogic) NoteList(req *types.NoteListReq) (*types.NoteListResp, e
 		}
 		n.CreatedAt = t.UTC().Format(time.RFC3339)
 		n.Tags = make([]types.NoteTag, 0)
+		noteIndexByID[n.Id] = len(items)
+		items = append(items, n)
+	}
 
-		// Fetch tags for this note
-		tagRows, err := db.QueryContext(l.ctx,
-			`SELECT nt."id", nt."tagName", nt."tagType"
+	if len(items) > 0 {
+		tagQueryArgs := make([]interface{}, 0, len(items))
+		tagPlaceholders := make([]string, 0, len(items))
+		for i, item := range items {
+			tagQueryArgs = append(tagQueryArgs, item.Id)
+			tagPlaceholders = append(tagPlaceholders, fmt.Sprintf("$%d", i+1))
+		}
+
+		tagQuery := `SELECT nnt."A", nt."id", nt."tagName", nt."tagType"
 			 FROM "NoteTag" nt
 			 INNER JOIN "_NoteToNoteTag" nnt ON nt."id" = nnt."B"
-			 WHERE nnt."A" = $1`,
-			n.Id)
-		if err == nil {
+			 WHERE nnt."A" IN (` + strings.Join(tagPlaceholders, ", ") + `)`
+
+		tagRows, err := db.QueryContext(l.ctx, tagQuery, tagQueryArgs...)
+		if err != nil {
+			logx.Errorf("batch tag query: %v", err)
+		} else {
 			defer tagRows.Close()
 			for tagRows.Next() {
+				var noteID int64
 				var tag types.NoteTag
-				if err := tagRows.Scan(&tag.Id, &tag.TagName, &tag.TagType); err != nil {
+				if err := tagRows.Scan(&noteID, &tag.Id, &tag.TagName, &tag.TagType); err != nil {
 					logx.Errorf("tag scan: %v", err)
 					continue
 				}
-				n.Tags = append(n.Tags, tag)
+				if idx, ok := noteIndexByID[noteID]; ok {
+					items[idx].Tags = append(items[idx].Tags, tag)
+				}
 			}
 		}
-
-		items = append(items, n)
 	}
 
 	// Count total with same filters
