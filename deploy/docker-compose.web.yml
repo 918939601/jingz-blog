@@ -7,21 +7,23 @@ services:
     container_name: jingz-blog-web
     restart: unless-stopped
     ports:
-      - "0.0.0.0:3000:3000"
+      - "127.0.0.1:3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       NODE_ENV: production
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      SITE_URL: http://124.223.57.73:3000
+      SITE_URL: http://124.223.57.73
       NEXT_PUBLIC_ADMIN_EMAILS: 918939601@qq.com
       AUTH_SECRET: Ay/CXMw4OLFLvFazkah8nNEvYUURD5iPtFijvZBvf5o=
       AUTH_TRUST_HOST: "true"
-      AUTH_URL: http://124.223.57.73:3000
-      NEXTAUTH_URL: http://124.223.57.73:3000
+      AUTH_URL: http://124.223.57.73
+      NEXTAUTH_URL: http://124.223.57.73
       AUTH_GITHUB_ID: Ov23liLxWcd2XA8xnLuJ
       AUTH_GITHUB_SECRET: c611464952a30bfa3c32d3e9b86203b8513f9d35
-      NEXT_PUBLIC_GO_API_BASE: http://124.223.57.73:8080
-      GO_API_BASE: http://124.223.57.73:8080
+      NEXT_PUBLIC_GO_API_BASE: http://124.223.57.73/goapi
+      GO_API_BASE: http://host.docker.internal:8080
       REVALIDATE_SECRET: b671528b34a117f04edda6bfa1ac443e4672f8b5d34d5455b054cd03852ccea7
       UPLOADTHING_TOKEN: eyJhcGlLZXkiOiJza19saXZlXzNlZDJiYWZlNTIyOWUyNjQ3ZWIzYmI5MDM2N2VlZTk5Y2YzZTFkMTdmODMxNTE3Y2M4MWVhZjJhMjUzZDRkMzUiLCJhcHBJZCI6IjFnZG4xc2xpOW0iLCJyZWdpb25zIjpbInNlYTEiXX0=
       DATABASE_URL: postgresql://neondb_owner:npg_VbBRHvSt4nu1@ep-cool-frost-adz6a2gp-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
