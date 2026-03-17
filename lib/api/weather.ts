@@ -1,21 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_GO_API_BASE || 'http://localhost:8080'
-
-async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${url}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-  })
-
-  if (!response.ok) {
-    const error = await response.text()
-    throw new Error(error || `API error: ${response.status}`)
-  }
-
-  return response.json()
-}
+import { apiFetch } from './client'
 
 export interface LocationDTO {
   province: string

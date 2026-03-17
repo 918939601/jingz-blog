@@ -76,7 +76,7 @@ Basic steps:
    - `SITE_URL=http://124.223.57.73`
    - `AUTH_URL=http://124.223.57.73`
    - `NEXTAUTH_URL=http://124.223.57.73`
-   - `NEXT_PUBLIC_GO_API_BASE=http://124.223.57.73/goapi`
+   - `NEXT_PUBLIC_GO_API_BASE=/goapi`
    - `GO_API_BASE=http://host.docker.internal:8080`
    - `NEXT_SITE_URL=http://124.223.57.73`
 7. Start both services:

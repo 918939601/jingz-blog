@@ -1,48 +1,6 @@
-const API_BASE = process.env.NEXT_PUBLIC_GO_API_BASE || 'http://localhost:8080'
+import { apiFetch, buildApiUrl } from './client'
+
 const AI_TIMEOUT_MS = 60_000 // 60 seconds for AI requests
-
-async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS)
-
-  try {
-    const response = await fetch(`${API_BASE}${url}`, {
-      ...options,
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    })
-
-    if (!response.ok) {
-      let errorMsg = `API error: ${response.status}`
-      try {
-        const errorData = await response.json()
-        errorMsg = errorData.message || errorData.error || errorMsg
-      }
-      catch {
-        const errorText = await response.text().catch(() => '')
-        if (errorText)
-          errorMsg = errorText
-      }
-      console.error('[AI API] Error response:', errorMsg)
-      throw new Error(errorMsg)
-    }
-
-    return response.json()
-  }
-  catch (err) {
-    if (err instanceof Error && err.name === 'AbortError') {
-      console.error('[AI API] Request timeout after', AI_TIMEOUT_MS, 'ms')
-      throw new Error('Request Timeout')
-    }
-    throw err
-  }
-  finally {
-    clearTimeout(timeout)
-  }
-}
 
 export interface AiContext {
   title?: string
@@ -66,10 +24,19 @@ export interface AskAiResp {
  * Ask AI a question
  */
 export async function askAi(req: AskAiReq): Promise<AskAiResp> {
-  return apiFetch<AskAiResp>('/api/ai/ask', {
-    method: 'POST',
-    body: JSON.stringify(req),
-  })
+  try {
+    return await apiFetch<AskAiResp>('/api/ai/ask', {
+      method: 'POST',
+      body: JSON.stringify(req),
+    })
+  }
+  catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      console.error('[AI API] Request timeout after', AI_TIMEOUT_MS, 'ms')
+      throw new Error('Request Timeout')
+    }
+    throw err
+  }
 }
 
 /**
@@ -85,7 +52,7 @@ export async function askAiStream(
   let fullText = ''
 
   try {
-    const response = await fetch(`${API_BASE}/api/ai/ask?stream=1`, {
+    const response = await fetch(buildApiUrl('/api/ai/ask?stream=1'), {
       method: 'POST',
       body: JSON.stringify(req),
       signal: controller.signal,

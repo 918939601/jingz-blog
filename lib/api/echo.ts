@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_GO_API_BASE || 'http://localhost:8080'
+import { apiFetch } from './client'
 
 export interface EchoDTO {
   id: number
@@ -13,23 +13,6 @@ export interface EchoListResponse {
   total: number
   page: number
   pageSize: number
-}
-
-async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${url}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-  })
-
-  if (!response.ok) {
-    const error = await response.text()
-    throw new Error(error || `API error: ${response.status}`)
-  }
-
-  return response.json()
 }
 
 export async function fetchEchos(params: { query?: string, page?: number, pageSize?: number } = {}) {

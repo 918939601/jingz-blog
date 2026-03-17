@@ -1,7 +1,20 @@
+const LOCAL_API_BASE = 'http://localhost:8080'
+
+export function getApiBase() {
+  if (typeof window !== 'undefined')
+    return process.env.NEXT_PUBLIC_GO_API_BASE || '/goapi'
+
+  return process.env.GO_API_BASE || process.env.NEXT_PUBLIC_GO_API_BASE || LOCAL_API_BASE
+}
+
+export function buildApiUrl(path: string) {
+  const base = getApiBase().replace(/\/+$/, '')
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${base}${normalizedPath}`.replace(/([^:])\/{2,}/g, '$1/')
+}
+
 export async function apiFetch<T = any>(path: string, init: RequestInit = {}): Promise<T> {
-  const base = process.env.NEXT_PUBLIC_GO_API_BASE || process.env.GO_API_BASE
-  if (!base)
-    throw new Error('GO_API_BASE is not configured')
+  const url = buildApiUrl(path)
 
   const headers = new Headers(init.headers)
   headers.set('Content-Type', 'application/json')
@@ -10,7 +23,7 @@ export async function apiFetch<T = any>(path: string, init: RequestInit = {}): P
   // const token = await getExternalBearerToken()
   // if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  const res = await fetch(`${base}${path}`.replace(/\/+$/, '').replace(/([^:])\/\//g, '$1/'), {
+  const res = await fetch(url, {
     ...init,
     headers,
     cache: 'no-store',

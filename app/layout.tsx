@@ -11,14 +11,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const isVercel = process.env.VERCEL === '1'
+
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="font-ye-font" suppressHydrationWarning>
         <RootLayoutClient>
           {children}
         </RootLayoutClient>
-        <Analytics />
-        <SpeedInsights />
+        {isVercel ? <Analytics /> : null}
+        {isVercel ? <SpeedInsights /> : null}
       </body>
     </html>
   )
