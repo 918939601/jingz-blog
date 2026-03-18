@@ -29,9 +29,9 @@ export default function BioSection() {
 
       <div className="space-y-4">
         <h1 className="paper-title text-4xl leading-[1.04] md:text-6xl">
-          你好，我是
+          Hi, I&apos;m
           {' '}
-          <span className="text-[#4ca79a] dark:text-[#8ed2c8]">Jin</span>
+          <span className="text-[#4ca79a] dark:text-[#8ed2c8]">OvO</span>
         </h1>
         <p className="max-w-2xl text-sm leading-7 text-foreground/72 md:text-base">
           这里不是只放文章的容器，而是我把博客、笔记和生活碎片整理成长期档案的地方。

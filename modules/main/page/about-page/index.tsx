@@ -78,9 +78,9 @@ export default function AboutPage() {
               <span className="paper-label !tracking-[0.18em]">personal archive</span>
             </div>
             <h1 className="paper-title mt-5 text-4xl leading-tight md:text-5xl">
-              你可以叫我
+              一个不知名的
               {' '}
-              <span className="text-[#4ca79a] dark:text-[#8ed2c8]">Jin</span>
+              <span className="text-[#4ca79a] dark:text-[#8ed2c8]">coder</span>
             </h1>
             <div className="mt-4 space-y-3 text-sm leading-7 text-foreground/68 md:text-base">
               <p>不要让梦想埋没啊啊啊啊啊啊啊啊啊啊啊</p>

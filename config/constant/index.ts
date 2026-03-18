@@ -8,7 +8,7 @@ export const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',')
 
 // * 元数据，SEO，网页关键字。。。
 export const metadata: Metadata = {
-  title: `zj-blog`,
+  title: `zovoj-blog`,
   description: '记录后端开发、技术文章与生活思考的博客站点',
   keywords: [
     '前端开发',
@@ -23,12 +23,12 @@ export const metadata: Metadata = {
     '学习',
     'breaking',
   ],
-  authors: [{ name: 'jing', url: 'https://useyeyu.cc' }],
-  creator: 'jing',
+  authors: [{ name: 'jingz', url: 'https://zovoj.ink' }],
+  creator: 'jingz',
 }
 
 // * 首页动画加载的文字，建议不要超过 5 个字，不然长度太长，当然，你也可以去修改样式~
-export const INITIAL_WELCOME_TEXT = 'blog'
+export const INITIAL_WELCOME_TEXT = '欢迎'
 
 // * 配置评论系统的官方文档 https://giscus.app/zh-CN
 export const COMMENT_CARD_REPO = 'NeilYeTAT/yeyu-blog-comment'

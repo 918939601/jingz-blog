@@ -7,7 +7,7 @@ Disallow: /auth/
 Disallow: /auth/*
 
 # Host
-Host: https://useyeyu.cc
+Host: https://zovoj.ink
 
 # Sitemaps
-Sitemap: https://useyeyu.cc/sitemap.xml
+Sitemap: https://zovoj.ink/sitemap.xml
