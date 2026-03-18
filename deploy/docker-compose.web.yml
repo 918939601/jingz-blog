@@ -12,14 +12,14 @@ services:
       NODE_ENV: production
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      SITE_URL: http://124.223.57.73
+      SITE_URL: https://www.zovoj.ink
       NEXT_PUBLIC_ADMIN_EMAILS: 918939601@qq.com
       AUTH_SECRET: Ay/CXMw4OLFLvFazkah8nNEvYUURD5iPtFijvZBvf5o=
       AUTH_TRUST_HOST: "true"
-      AUTH_URL: http://124.223.57.73
-      NEXTAUTH_URL: http://124.223.57.73
-      AUTH_GITHUB_ID: Ov23liLxWcd2XA8xnLuJ
-      AUTH_GITHUB_SECRET: c611464952a30bfa3c32d3e9b86203b8513f9d35
+      AUTH_URL: https://www.zovoj.ink
+      NEXTAUTH_URL: https://www.zovoj.ink
+      AUTH_GITHUB_ID: Ov23librUscjPsoLlnto
+      AUTH_GITHUB_SECRET: e0c518c4eec2e68528c28bb88f522e1a43605296
       NEXT_PUBLIC_GO_API_BASE: /goapi
       GO_API_BASE: http://jingz-blog-api:8080
       REVALIDATE_SECRET: b671528b34a117f04edda6bfa1ac443e4672f8b5d34d5455b054cd03852ccea7
