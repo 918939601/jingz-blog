@@ -33,7 +33,7 @@
 }
 
 .markdown-body a {
-  @apply mx-1 inline-flex items-center gap-1 !no-underline;
+  @apply mx-1 inline underline underline-offset-[0.18em] decoration-[0.08em];
 }
 
 .medium-zoom-image--opened {
