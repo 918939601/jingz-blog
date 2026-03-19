@@ -1,27 +1,24 @@
-import { redirect } from 'next/navigation'
 import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { fetchNoteBySlug } from '@/lib/api/note'
 import { fetchTags } from '@/lib/api/tag'
-import { requireAdmin } from '@/lib/auth'
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string[] | undefined }>
 }) {
-  try {
-    await requireAdmin()
-  }
-  catch {
-    redirect(`/admin/note`)
-  }
-
   const slug = (await params).slug?.[0] ?? null
 
   let article = null
-  if (slug) {
+  const articlePromise = slug
+    ? fetchNoteBySlug(slug).catch(() => null)
+    : Promise.resolve(null)
+  const noteTagsPromise = fetchTags('NOTE')
+
+  const [noteDTO, noteTagsDTO] = await Promise.all([articlePromise, noteTagsPromise])
+
+  if (noteDTO) {
     try {
-      const noteDTO = await fetchNoteBySlug(slug)
       // Convert DTO to match Prisma type
       article = {
         ...noteDTO,
@@ -34,7 +31,6 @@ export default async function Page({
     }
   }
 
-  const noteTagsDTO = await fetchTags('NOTE')
   const noteTags = noteTagsDTO.map(t => ({ ...t, tagType: t.tagType as any }))
   const relatedArticleTagNames = article ? (article.tags ?? []).map((v: any) => v.tagName) : []
 

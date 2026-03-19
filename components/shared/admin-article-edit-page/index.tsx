@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { TagType } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { File, Loader2, NotebookPen, Tags } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -25,8 +26,18 @@ import { createBlog, updateBlog } from '@/lib/api/blog'
 import { createNote, updateNote } from '@/lib/api/note'
 import { parseEditPageTypeFromUrl } from '@/lib/url'
 import { useModalStore } from '@/store/use-modal-store'
-import MarkdownEditor from './internal/markdown-editor'
 import { ArticleSchema } from './type'
+
+const MarkdownEditor = dynamic(() => import('./internal/markdown-editor'), {
+  ssr: false,
+  loading: () => (
+    <div className="admin-editor-shell">
+      <div className="flex h-[70vh] min-h-[560px] items-center justify-center rounded-[22px] border border-white/80 bg-white/72 text-sm text-foreground/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.42)] dark:border-white/12 dark:bg-white/[0.05] dark:text-white/58">
+        正在加载编辑器...
+      </div>
+    </div>
+  ),
+})
 
 export default function AdminArticleEditPage({
   article,

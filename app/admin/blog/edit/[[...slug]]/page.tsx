@@ -1,27 +1,24 @@
-import { redirect } from 'next/navigation'
 import AdminArticleEditPage from '@/components/shared/admin-article-edit-page'
 import { fetchBlogBySlug } from '@/lib/api/blog'
 import { fetchTags } from '@/lib/api/tag'
-import { requireAdmin } from '@/lib/auth'
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string[] | undefined }>
 }) {
-  try {
-    await requireAdmin()
-  }
-  catch {
-    redirect(`/admin/blog`)
-  }
-
   const slug = (await params).slug?.[0] ?? null
 
   let article = null
-  if (slug) {
+  const articlePromise = slug
+    ? fetchBlogBySlug(slug).catch(() => null)
+    : Promise.resolve(null)
+  const blogTagsPromise = fetchTags('BLOG')
+
+  const [blogDTO, blogTagsDTO] = await Promise.all([articlePromise, blogTagsPromise])
+
+  if (blogDTO) {
     try {
-      const blogDTO = await fetchBlogBySlug(slug)
       // Convert DTO to match Prisma type
       article = {
         ...blogDTO,
@@ -34,7 +31,6 @@ export default async function Page({
     }
   }
 
-  const blogTagsDTO = await fetchTags('BLOG')
   const blogTags = blogTagsDTO.map(t => ({ ...t, tagType: t.tagType as any }))
   const relatedBlogTagNames = article ? (article.tags ?? []).map((v: any) => v.tagName) : []
 
