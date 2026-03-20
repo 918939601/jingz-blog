@@ -25,6 +25,10 @@ export default function ActionButtons({
         className={cn(
           buttonVariants({ variant: 'outline', className: iconButtonClass }),
         )}
+        onClick={(e) => {
+          e.preventDefault()
+          window.location.href = `/note/${slug}`
+        }}
       >
         <Eye className="size-4" />
       </Link>

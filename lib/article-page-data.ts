@@ -30,25 +30,13 @@ async function buildArticlePageData(article: {
 }
 
 export async function getCachedBlogPageData(slug: string): Promise<ArticlePageData> {
-  return unstable_cache(
-    async () => {
-      const article = await fetchBlogHtmlBySlug(slug)
-      return buildArticlePageData(article)
-    },
-    ['blog-page-data', slug],
-    { revalidate: 300 },
-  )()
+  const article = await fetchBlogHtmlBySlug(slug)
+  return buildArticlePageData(article)
 }
 
 export async function getCachedNotePageData(slug: string): Promise<ArticlePageData> {
-  return unstable_cache(
-    async () => {
-      const article = await fetchNoteHtmlBySlug(slug)
-      return buildArticlePageData(article)
-    },
-    ['note-page-data', slug],
-    { revalidate: 300 },
-  )()
+  const article = await fetchNoteHtmlBySlug(slug)
+  return buildArticlePageData(article)
 }
 
 export async function getCachedBlogListData() {

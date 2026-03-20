@@ -7,7 +7,7 @@ import ScrollIndicator from '@/components/shared/scroll-indicator'
 import { getCachedNotePageData } from '@/lib/article-page-data'
 
 export const dynamicParams = true
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   try {
