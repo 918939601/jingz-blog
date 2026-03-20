@@ -30,12 +30,17 @@ func (l *BlogDeleteLogic) BlogDelete(req *types.BlogDeleteReq) (*types.Blog, err
 		return nil, err
 	}
 
+	var slug string
+	if err := db.QueryRowContext(l.ctx, `SELECT "slug" FROM "Blog" WHERE "id" = $1`, req.Id).Scan(&slug); err != nil {
+		return nil, err
+	}
+
 	// Delete blog (cascade will delete BlogBlogTag entries)
 	_, err = db.ExecContext(l.ctx, `DELETE FROM "Blog" WHERE "id" = $1`, req.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog", "/blog/" + slug})
 	return nil, nil
 }

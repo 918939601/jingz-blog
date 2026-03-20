@@ -27,10 +27,15 @@ func (l *NoteDeleteLogic) NoteDelete(req *types.NoteDeleteReq) (*types.Note, err
 		return nil, err
 	}
 
+	var slug string
+	if err := db.QueryRowContext(l.ctx, `SELECT "slug" FROM "Note" WHERE "id"=$1`, req.Id).Scan(&slug); err != nil {
+		return nil, err
+	}
+
 	if _, err := db.ExecContext(l.ctx, `DELETE FROM "Note" WHERE "id"=$1`, req.Id); err != nil {
 		return nil, err
 	}
 
-	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/admin/note"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/note", "/admin/note", "/note/" + slug})
 	return nil, nil
 }

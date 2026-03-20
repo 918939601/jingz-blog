@@ -51,6 +51,6 @@ func (l *BlogToggleLogic) BlogToggle(req *types.BlogToggleReq) (*types.Blog, err
 	b.CreatedAt = createdAt.UTC().Format(time.RFC3339)
 	b.UpdatedAt = updatedAt.UTC().Format(time.RFC3339)
 
-	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog"})
+	util.RevalidateConfiguredNext(l.svcCtx.Config.NextSiteURL, os.Getenv("REVALIDATE_SECRET"), []string{"/blog", "/admin/blog", "/blog/" + b.Slug})
 	return &b, nil
 }
