@@ -21,6 +21,7 @@ export default function ActionButtons({
     <section className="flex items-center gap-2">
       <Link
         href={`/blog/${slug}`}
+        prefetch={false}
         className={cn(
           buttonVariants({ variant: 'outline', className: iconButtonClass }),
         )}
